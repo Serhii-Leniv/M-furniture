@@ -9,6 +9,7 @@
       display: flex;
       overflow: hidden;
       position: relative;
+      margin-bottom: 140px; /* Збільшуємо відступ для кнопок */
     }
     .product-carousel img {
       width: 200px;
@@ -20,20 +21,68 @@
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(0, 0, 0, 0.7); /* Більш контрастний колір */
       color: white;
       border: none;
-      padding: 10px;
+      padding: 15px; /* Збільшуємо розмір кнопок */
       cursor: pointer;
+      font-size: 28px; /* Збільшуємо розмір іконок */
+      z-index: 1; /* Щоб кнопки були поверх інших елементів */
+      border-radius: 50%; /* Робимо кнопки круглими */
+      width: 60px; /* Збільшуємо ширину */
+      height: 60px; /* Збільшуємо висоту */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease; /* Плавна зміна кольору */
+    }
+
+    .carousel-arrow:hover {
+      background-color: rgba(0, 0, 0, 0.9); /* Темніший колір при наведенні */
     }
     .carousel-arrow.left {
-      left: 0;
+      left: 20px; /* Відступ зліва */
     }
     .carousel-arrow.right {
-      right: 0;
+      right: 20px; /* Відступ справа */
     }
     .category-section {
       margin-top: 50px;
+      position: relative; /* Для правильного позиціонування кнопок */
+      overflow: visible; /* Забезпечуємо, що кнопки не обрізаються */
+    }
+
+    .product-carousel .d-flex {
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      -ms-overflow-style: none; /* Ховаємо повзунок для IE/Edge */
+      scrollbar-width: none; /* Ховаємо повзунок для Firefox */
+    }
+
+    .product-carousel .d-flex::-webkit-scrollbar {
+      display: none; /* Ховаємо повзунок для Chrome/Safari */
+    }
+
+    /* Стилі для пошуку */
+    .search-container {
+      position: relative;
+      width: 400px; /* Збільшуємо ширину пошуку */
+    }
+
+    .search-container input {
+      width: 100%;
+      padding-right: 50px; /* Відступ для іконки лупи */
+      font-size: 16px; /* Збільшуємо розмір тексту */
+    }
+
+    .search-container .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d; /* Колір іконки */
+      cursor: pointer;
+      font-size: 20px; /* Збільшуємо розмір іконки */
     }
   </style>
 </head>
@@ -49,10 +98,10 @@
 
   <!-- Пошук -->
   <div class="d-flex align-items-center">
-    <form class="d-flex">
-      <input class="form-control me-2" type="search" placeholder="Пошук" aria-label="Пошук">
-      <button class="btn btn-outline-success" type="submit">Знайти</button>
-    </form>
+    <div class="search-container">
+      <input class="form-control" type="search" placeholder="Пошук" aria-label="Пошук">
+      <i class="fas fa-search search-icon"></i> <!-- Іконка лупи -->
+    </div>
   </div>
 
   <!-- Іконки телефону, акаунту та кошика -->
@@ -103,10 +152,8 @@
 
   <!-- Секції з продуктами за категоріями -->
   <div th:each="category : ${categories}" class="category-section">
-    <h3 th:id="${category}" th:text="${category}"></h3>
+    <h3 th:text="${category}"></h3>
     <div class="product-carousel">
-      <button class="carousel-arrow left" onclick="scrollProducts(-1, '${category}')"><i
-              class="fas fa-chevron-left"></i></button>
       <div class="d-flex">
         <!-- Продукти -->
         <div th:each="product : ${products}" th:if="${product.category == category}" class="product-item">
@@ -120,18 +167,26 @@
           </div>
         </div>
       </div>
-      <button class="carousel-arrow right" onclick="scrollProducts(1, '${category}')"><i
-              class="fas fa-chevron-right"></i></button>
+      <!-- Кнопки прокрутки -->
+      <button class="carousel-arrow left" onclick="scrollProducts(this, -1)"><i class="fas fa-chevron-left"></i>
+      </button>
+      <button class="carousel-arrow right" onclick="scrollProducts(this, 1)"><i class="fas fa-chevron-right"></i>
+      </button>
     </div>
   </div>
 </div>
 
 <script>
-  // Функція для гортання продуктів
-  function scrollProducts(direction, category) {
-    const carousel = document.querySelector(`#${category} + .product-carousel .d-flex`);
-    const scrollAmount = 220; // Ширина продукту + відступ
-    carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+  // Функція для прокрутки продуктів
+  function scrollProducts(button, direction) {
+    // Знаходимо контейнер з продуктами
+    const carousel = button.closest('.product-carousel').querySelector('.d-flex');
+    if (carousel) {
+      const scrollAmount = 220; // Ширина продукту + відступ
+      carousel.scrollBy({left: direction * scrollAmount, behavior: 'smooth'});
+    } else {
+      console.error('Контейнер з продуктами не знайдено.');
+    }
   }
 </script>
 </body>
