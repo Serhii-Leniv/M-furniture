@@ -5,18 +5,56 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
+    /* Стилі для анімації додавання товару */
+    @keyframes cartBounce {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+    }
+
+    .cart-icon-animation {
+      animation: cartBounce 0.5s ease;
+    }
+
+    /* Стилі для повідомлення про додавання товару */
+    .cart-notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transform: translateY(100%);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .cart-notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Інші стилі */
     .product-carousel {
       display: flex;
       overflow: hidden;
       position: relative;
       margin-bottom: 140px;
     }
+
     .product-carousel img {
       width: 200px;
       height: 200px;
       object-fit: cover;
       margin-right: 20px;
     }
+
     .carousel-arrow {
       position: absolute;
       top: 50%;
@@ -36,38 +74,47 @@
       justify-content: center;
       transition: background-color 0.3s ease;
     }
+
     .carousel-arrow:hover {
       background-color: rgba(0, 0, 0, 0.9);
     }
+
     .carousel-arrow.left {
       left: 20px;
     }
+
     .carousel-arrow.right {
       right: 20px;
     }
+
     .category-section {
       margin-top: 50px;
       position: relative;
       overflow: visible;
     }
+
     .product-carousel .d-flex {
       overflow-x: auto;
       scroll-behavior: smooth;
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
     .product-carousel .d-flex::-webkit-scrollbar {
       display: none;
     }
+
     .search-container {
       position: relative;
       width: 400px;
     }
+
     .search-container input {
       width: 100%;
       padding-right: 50px;
       font-size: 16px;
     }
+
     .search-container .search-icon {
       position: absolute;
       right: 15px;
@@ -107,6 +154,13 @@
       background-color: red;
       color: white;
       border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
+    }
+
+    /* Стилі для кнопки видалення */
+    .btn-remove {
+      margin-left: 10px;
       padding: 2px 6px;
       font-size: 12px;
     }
@@ -151,6 +205,10 @@
           <ul>
             <li th:each="item : ${cartItems}">
               <span th:text="${item.name}"></span> - <span th:text="${item.price} + ' грн'"></span>
+              <!-- Кнопка видалення -->
+              <button class="btn btn-danger btn-sm btn-remove" th:onclick="'removeFromCart(' + ${item.id} + ')'">
+                <i class="fas fa-trash"></i>
+              </button>
             </li>
           </ul>
         </div>
@@ -212,6 +270,12 @@
     </div>
   </div>
 </div>
+
+<!-- Повідомлення про додавання товару -->
+<div id="cart-notification" class="cart-notification">
+  <i class="fas fa-shopping-cart"></i> Товар додано до кошика
+</div>
+
 <script>
   // Функція для прокрутки продуктів
   function scrollProducts(button, direction) {
@@ -224,6 +288,7 @@
     }
   }
 
+  // Функція для додавання товару до кошика
   function addToCart(productId) {
     fetch(`http://localhost:8080/cart/add?productId=${productId}`, {
       method: 'POST',
@@ -238,8 +303,8 @@
               return response.json();
             })
             .then(data => {
-              alert(data.message);
-              updateCartDropdown();
+              showCartNotification('Товар додано до кошика'); // Показуємо повідомлення
+              updateCartDropdown(); // Оновлюємо кошик
             })
             .catch(error => {
               console.error('Помилка:', error);
@@ -247,6 +312,41 @@
             });
   }
 
+  // Функція для видалення товару з кошика
+  function removeFromCart(productId) {
+    fetch(`http://localhost:8080/cart/remove?productId=${productId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Помилка при видаленні товару з кошика');
+              }
+              return response.json();
+            })
+            .then(data => {
+              showCartNotification('Товар видалено з кошика'); // Показуємо повідомлення
+              updateCartDropdown(); // Оновлюємо кошик
+            })
+            .catch(error => {
+              console.error('Помилка:', error);
+              alert('Помилка при видаленні товару з кошика');
+            });
+  }
+
+  // Функція для показу повідомлення
+  function showCartNotification(message) {
+    const notification = document.getElementById('cart-notification');
+    notification.innerHTML = `<i class="fas fa-shopping-cart"></i> ${message}`;
+    notification.classList.add('show'); // Показуємо повідомлення
+    setTimeout(() => {
+      notification.classList.remove('show'); // Ховаємо повідомлення через 2 секунди
+    }, 2000);
+  }
+
+  // Функція для оновлення випадаючого меню кошика
   function updateCartDropdown() {
     fetch('http://localhost:8080/cart/items')
             .then(response => {
@@ -262,10 +362,13 @@
               if (cartDropdown && cartCount) {
                 if (data.length > 0) {
                   const cartItemsHtml = data.map(item => `
-                    <li>
-                        <span>${item.name}</span> - <span>${item.price} грн</span>
-                    </li>
-                `).join('');
+            <li>
+              <span>${item.name}</span> - <span>${item.price} грн</span>
+              <button class="btn btn-danger btn-sm btn-remove" onclick="removeFromCart(${item.id})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </li>
+          `).join('');
                   cartDropdown.innerHTML = `<ul>${cartItemsHtml}</ul>`;
                   cartCount.textContent = data.length;
                 } else {

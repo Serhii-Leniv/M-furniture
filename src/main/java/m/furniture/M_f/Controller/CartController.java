@@ -37,4 +37,19 @@ public class CartController {
             return ResponseEntity.status(500).body(errorResponse);
         }
     }
+
+    @DeleteMapping("/cart/remove")
+    public ResponseEntity<Map<String, String>> removeFromCart(@RequestParam Long productId, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            cartService.removeProductFromCart(productId, request, response);
+
+            Map<String, String> responseBody = new HashMap<>();
+            responseBody.put("message", "Товар видалено з кошика");
+            return ResponseEntity.ok(responseBody);
+        } catch (RuntimeException e) {
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("message", e.getMessage());
+            return ResponseEntity.status(500).body(errorResponse);
+        }
+    }
 }

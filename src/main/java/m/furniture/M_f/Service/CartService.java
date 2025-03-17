@@ -67,6 +67,32 @@ public class CartService {
         }
     }
 
+    public void removeProductFromCart(Long productId, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            List<Product> cartItems = getCartItems(request);
+
+            // Знаходимо перший товар з вказаним ID і видаляємо його
+            Product productToRemove = cartItems.stream()
+                    .filter(product -> product.getId().equals(productId))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Товар не знайдено: productId = " + productId));
+
+            cartItems.remove(productToRemove); // Видаляємо лише один товар
+
+            String cartJson = convertCartToJson(cartItems);
+            String encodedCartJson = encodeCookieValue(cartJson);
+
+            Cookie cartCookie = new Cookie("cart", encodedCartJson);
+            cartCookie.setMaxAge(7 * 24 * 60 * 60); // Термін дії куки - 7 днів
+            cartCookie.setPath("/"); // Встановлюємо шлях для куки
+            response.addCookie(cartCookie);
+        } catch (Exception e) {
+            System.err.println("Помилка при видаленні товару з кошика: " + e.getMessage());
+            throw new RuntimeException("Помилка при видаленні товару з кошика", e);
+        }
+    }
+
+
     private List<Product> parseCartJson(String cartJson) {
         try {
             return objectMapper.readValue(cartJson, new TypeReference<List<Product>>() {
