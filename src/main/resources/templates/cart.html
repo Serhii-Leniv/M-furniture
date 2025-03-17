@@ -6,21 +6,20 @@
 </head>
 <body>
 <div class="container">
-  <h1>Ваш кошик</h1>
-  <div th:if="${cart.products.isEmpty()}">
-    <p>Ваш кошик порожній.</p>
-  </div>
-  <div th:unless="${cart.products.isEmpty()}">
+  <h1>Кошик</h1>
+  <div th:if="${cartItems != null && !cartItems.isEmpty()}">
     <ul>
-      <li th:each="product : ${cart.products}">
-        <span th:text="${product.name}"></span> -
-        <span th:text="${product.price} + ' грн'"></span>
-        <a th:href="@{/cart/remove(productId=${product.id})}">Видалити</a>
+      <li th:each="item : ${cartItems}">
+        <span th:text="${item.name}"></span> - <span th:text="${item.price} + ' грн'"></span>
       </li>
     </ul>
-    <a href="/order" class="btn btn-primary">Оформити замовлення</a>
+    <form th:action="@{/order}" method="post">
+      <button type="submit" class="btn btn-primary">Оформити замовлення</button>
+    </form>
   </div>
-  <a href="/" class="btn btn-secondary">Повернутися до каталогу</a>
+  <div th:if="${cartItems == null || cartItems.isEmpty()}">
+    <p>Кошик порожній.</p>
+  </div>
 </div>
 </body>
-</html>git remote -v
+</html>

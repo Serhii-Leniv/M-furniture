@@ -9,7 +9,7 @@
       display: flex;
       overflow: hidden;
       position: relative;
-      margin-bottom: 140px; /* Збільшуємо відступ для кнопок */
+      margin-bottom: 140px;
     }
     .product-carousel img {
       width: 200px;
@@ -21,68 +21,94 @@
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background-color: rgba(0, 0, 0, 0.7); /* Більш контрастний колір */
+      background-color: rgba(0, 0, 0, 0.7);
       color: white;
       border: none;
-      padding: 15px; /* Збільшуємо розмір кнопок */
+      padding: 15px;
       cursor: pointer;
-      font-size: 28px; /* Збільшуємо розмір іконок */
-      z-index: 1; /* Щоб кнопки були поверх інших елементів */
-      border-radius: 50%; /* Робимо кнопки круглими */
-      width: 60px; /* Збільшуємо ширину */
-      height: 60px; /* Збільшуємо висоту */
+      font-size: 28px;
+      z-index: 1;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background-color 0.3s ease; /* Плавна зміна кольору */
+      transition: background-color 0.3s ease;
     }
-
     .carousel-arrow:hover {
-      background-color: rgba(0, 0, 0, 0.9); /* Темніший колір при наведенні */
+      background-color: rgba(0, 0, 0, 0.9);
     }
     .carousel-arrow.left {
-      left: 20px; /* Відступ зліва */
+      left: 20px;
     }
     .carousel-arrow.right {
-      right: 20px; /* Відступ справа */
+      right: 20px;
     }
     .category-section {
       margin-top: 50px;
-      position: relative; /* Для правильного позиціонування кнопок */
-      overflow: visible; /* Забезпечуємо, що кнопки не обрізаються */
+      position: relative;
+      overflow: visible;
     }
-
     .product-carousel .d-flex {
       overflow-x: auto;
       scroll-behavior: smooth;
-      -ms-overflow-style: none; /* Ховаємо повзунок для IE/Edge */
-      scrollbar-width: none; /* Ховаємо повзунок для Firefox */
+      -ms-overflow-style: none;
+      scrollbar-width: none;
     }
-
     .product-carousel .d-flex::-webkit-scrollbar {
-      display: none; /* Ховаємо повзунок для Chrome/Safari */
+      display: none;
     }
-
-    /* Стилі для пошуку */
     .search-container {
       position: relative;
-      width: 400px; /* Збільшуємо ширину пошуку */
+      width: 400px;
     }
-
     .search-container input {
       width: 100%;
-      padding-right: 50px; /* Відступ для іконки лупи */
-      font-size: 16px; /* Збільшуємо розмір тексту */
+      padding-right: 50px;
+      font-size: 16px;
     }
-
     .search-container .search-icon {
       position: absolute;
       right: 15px;
       top: 50%;
       transform: translateY(-50%);
-      color: #6c757d; /* Колір іконки */
+      color: #6c757d;
       cursor: pointer;
-      font-size: 20px; /* Збільшуємо розмір іконки */
+      font-size: 20px;
+    }
+
+    .product-item {
+      position: relative;
+    }
+
+    .product-item .cart-icon {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 50%;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: background-color 0.3s ease;
+    }
+
+    .product-item .cart-icon:hover {
+      background-color: rgba(255, 255, 255, 1);
+    }
+
+    .cart-count {
+      position: absolute;
+      top: -10px;
+      right: -10px;
+      background-color: red;
+      color: white;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 12px;
     }
   </style>
 </head>
@@ -100,7 +126,7 @@
   <div class="d-flex align-items-center">
     <div class="search-container">
       <input class="form-control" type="search" placeholder="Пошук" aria-label="Пошук">
-      <i class="fas fa-search search-icon"></i> <!-- Іконка лупи -->
+      <i class="fas fa-search search-icon"></i>
     </div>
   </div>
 
@@ -114,17 +140,25 @@
       </div>
     </div>
 
-    <!-- Акаунт -->
+    <!-- Кошик -->
     <div class="dropdown me-3">
-      <a href="#" class="text-dark"><i class="fas fa-user"></i></a>
-      <div class="dropdown-menu p-2">
-        <a href="/login" class="btn btn-link text-dark">Увійти</a>
-        <a href="/register" class="btn btn-link text-dark">Реєстрація</a>
+      <a href="#" class="text-dark" data-bs-toggle="dropdown">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count" th:text="${cartItems != null ? cartItems.size() : 0}"></span>
+      </a>
+      <div class="dropdown-menu p-2 cart-dropdown">
+        <div th:if="${cartItems != null && !cartItems.isEmpty()}">
+          <ul>
+            <li th:each="item : ${cartItems}">
+              <span th:text="${item.name}"></span> - <span th:text="${item.price} + ' грн'"></span>
+            </li>
+          </ul>
+        </div>
+        <div th:if="${cartItems == null || cartItems.isEmpty()}">
+          <p>Кошик порожній.</p>
+        </div>
       </div>
     </div>
-
-    <!-- Кошик -->
-    <a href="/cart" class="text-dark"><i class="fas fa-shopping-cart"></i></a>
   </div>
 </header>
 
@@ -158,12 +192,15 @@
         <!-- Продукти -->
         <div th:each="product : ${products}" th:if="${product.category == category}" class="product-item">
           <img th:src="${product.imageUrl}" alt="Продукт">
+          <!-- Іконка кошика -->
+          <a class="cart-icon text-dark" th:onclick="'addToCart(' + ${product.id} + ')'">
+            <i class="fas fa-shopping-cart"></i>
+          </a>
           <div class="d-flex justify-content-between align-items-center">
             <div>
               <h5 th:text="${product.name}"></h5>
               <p th:text="${product.price} + ' грн'"></p>
             </div>
-            <a href="#" class="text-dark"><i class="fas fa-shopping-cart"></i></a>
           </div>
         </div>
       </div>
@@ -175,19 +212,75 @@
     </div>
   </div>
 </div>
-
 <script>
   // Функція для прокрутки продуктів
   function scrollProducts(button, direction) {
-    // Знаходимо контейнер з продуктами
     const carousel = button.closest('.product-carousel').querySelector('.d-flex');
     if (carousel) {
-      const scrollAmount = 220; // Ширина продукту + відступ
+      const scrollAmount = 220;
       carousel.scrollBy({left: direction * scrollAmount, behavior: 'smooth'});
     } else {
       console.error('Контейнер з продуктами не знайдено.');
     }
   }
+
+  function addToCart(productId) {
+    fetch(`http://localhost:8080/cart/add?productId=${productId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Помилка при додаванні товару в кошик');
+              }
+              return response.json();
+            })
+            .then(data => {
+              alert(data.message);
+              updateCartDropdown();
+            })
+            .catch(error => {
+              console.error('Помилка:', error);
+              alert('Помилка при додаванні товару в кошик');
+            });
+  }
+
+  function updateCartDropdown() {
+    fetch('http://localhost:8080/cart/items')
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Помилка при отриманні даних з кошика');
+              }
+              return response.json();
+            })
+            .then(data => {
+              const cartDropdown = document.querySelector('.dropdown-menu.cart-dropdown');
+              const cartCount = document.querySelector('.cart-count');
+
+              if (cartDropdown && cartCount) {
+                if (data.length > 0) {
+                  const cartItemsHtml = data.map(item => `
+                    <li>
+                        <span>${item.name}</span> - <span>${item.price} грн</span>
+                    </li>
+                `).join('');
+                  cartDropdown.innerHTML = `<ul>${cartItemsHtml}</ul>`;
+                  cartCount.textContent = data.length;
+                } else {
+                  cartDropdown.innerHTML = '<p>Кошик порожній.</p>';
+                  cartCount.textContent = 0;
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Помилка при оновленні кошика:', error);
+            });
+  }
 </script>
+
+<!-- Підключення Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

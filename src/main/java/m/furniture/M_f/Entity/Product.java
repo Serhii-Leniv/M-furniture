@@ -1,8 +1,11 @@
 package m.furniture.M_f.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -29,5 +32,7 @@ public class Product {
 
     private String imageUrl;
 
-
+    @JsonIgnore // Ігноруємо це поле при серіалізації JSON
+    @ManyToMany(mappedBy = "products")
+    private List<Cart> carts = new ArrayList<>();
 }

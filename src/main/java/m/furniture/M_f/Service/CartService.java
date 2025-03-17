@@ -1,35 +1,104 @@
 package m.furniture.M_f.Service;
 
-import m.furniture.M_f.Entity.Cart;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import m.furniture.M_f.Entity.Product;
-import m.furniture.M_f.Entity.User;
-import m.furniture.M_f.Repository.CartRepository;
 import m.furniture.M_f.Repository.ProductRepository;
-import m.furniture.M_f.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class CartService {
-    @Autowired
-    private CartRepository cartRepository;
 
     @Autowired
     private ProductRepository productRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public void addProductToCart(Long productId, String username) {
-        User user = userRepository.findByUsername(username);
-        Cart cart = cartRepository.findByUser(user);
-        if (cart == null) {
-            cart = new Cart();
-            cart.setUser(user);
+    public List<Product> getCartItems(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("cart")) {
+                    String encodedCartJson = cookie.getValue();
+                    String cartJson = decodeCookieValue(encodedCartJson); // Декодуємо значення куки
+                    try {
+                        return parseCartJson(cartJson);
+                    } catch (Exception e) {
+                        System.err.println("Помилка при парсингу JSON кошика: " + e.getMessage());
+                        return new ArrayList<>();
+                    }
+                }
+            }
         }
+        return new ArrayList<>();
+    }
 
-        Product product = productRepository.findById(productId).orElseThrow();
-        cart.getProducts().add(product);
-        cartRepository.save(cart);
+    public void addProductToCart(Long productId, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            Product product = productRepository.findById(productId)
+                    .orElseThrow(() -> new RuntimeException("Товар не знайдено: productId = " + productId));
+
+            List<Product> cartItems = getCartItems(request);
+            cartItems.add(product);
+
+            String cartJson = convertCartToJson(cartItems);
+            System.out.println("JSON кошика: " + cartJson); // Логування JSON
+
+            // Кодуємо JSON перед збереженням у куці
+            String encodedCartJson = encodeCookieValue(cartJson);
+
+            Cookie cartCookie = new Cookie("cart", encodedCartJson);
+            cartCookie.setMaxAge(7 * 24 * 60 * 60); // Термін дії куки - 7 днів
+            cartCookie.setPath("/"); // Встановлюємо шлях для куки
+            response.addCookie(cartCookie);
+        } catch (Exception e) {
+            System.err.println("Помилка при додаванні товару до кошика: " + e.getMessage());
+            throw new RuntimeException("Помилка при додаванні товару до кошика", e);
+        }
+    }
+
+    private List<Product> parseCartJson(String cartJson) {
+        try {
+            return objectMapper.readValue(cartJson, new TypeReference<List<Product>>() {
+            });
+        } catch (Exception e) {
+            throw new RuntimeException("Помилка при парсингу JSON кошика", e);
+        }
+    }
+
+    private String convertCartToJson(List<Product> cartItems) {
+        try {
+            return objectMapper.writeValueAsString(cartItems);
+        } catch (Exception e) {
+            throw new RuntimeException("Помилка при конвертації кошика в JSON", e);
+        }
+    }
+
+    // Кодуємо значення куки
+    private String encodeCookieValue(String value) {
+        try {
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+        } catch (Exception e) {
+            throw new RuntimeException("Помилка при кодуванні значення куки", e);
+        }
+    }
+
+    // Декодуємо значення куки
+    private String decodeCookieValue(String value) {
+        try {
+            return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
+        } catch (Exception e) {
+            throw new RuntimeException("Помилка при декодуванні значення куки", e);
+        }
     }
 }

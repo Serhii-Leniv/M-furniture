@@ -22,8 +22,6 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private User user;
 
     @ManyToMany
     private List<Product> products = new ArrayList<>();
