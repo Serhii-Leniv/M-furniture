@@ -30,6 +30,7 @@ public class Product {
 
     private Integer stock;
 
+    @JsonIgnore
     private String imageUrl;
 
     @JsonIgnore // Ігноруємо це поле при серіалізації JSON

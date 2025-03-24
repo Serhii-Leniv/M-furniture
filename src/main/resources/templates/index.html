@@ -164,6 +164,48 @@
       padding: 2px 6px;
       font-size: 12px;
     }
+
+    /* Стилі для футера */
+    footer {
+      background-color: #f8f9fa;
+      padding: 40px 0;
+      margin-top: 50px;
+      border-top: 1px solid #e9ecef;
+    }
+
+    .footer-section {
+      margin-bottom: 20px;
+    }
+
+    .footer-section h5 {
+      margin-bottom: 15px;
+      font-weight: bold;
+    }
+
+    .footer-section ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .footer-section ul li {
+      margin-bottom: 10px;
+    }
+
+    .footer-section ul li a {
+      color: #6c757d;
+      text-decoration: none;
+    }
+
+    .footer-section ul li a:hover {
+      color: #000;
+    }
+
+    .google-map {
+      height: 200px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      overflow: hidden;
+    }
   </style>
 </head>
 <body>
@@ -249,7 +291,9 @@
       <div class="d-flex">
         <!-- Продукти -->
         <div th:each="product : ${products}" th:if="${product.category == category}" class="product-item">
-          <img th:src="${product.imageUrl}" alt="Продукт">
+          <a th:href="@{/product/{id}(id=${product.id})}"> <!-- Посилання на сторінку товару -->
+            <img th:src="${product.imageUrl}" alt="Продукт">
+          </a>
           <!-- Іконка кошика -->
           <a class="cart-icon text-dark" th:onclick="'addToCart(' + ${product.id} + ')'">
             <i class="fas fa-shopping-cart"></i>
@@ -270,6 +314,42 @@
     </div>
   </div>
 </div>
+
+<!-- Футер -->
+<footer class="container-fluid">
+  <div class="container">
+    <div class="row">
+      <!-- Соц мережі -->
+      <div class="col-md-3 footer-section">
+        <h5>Соц мережі</h5>
+        <ul>
+          <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+          <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+          <li><a href="#"><i class="fab fa-telegram"></i> Telegram</a></li>
+        </ul>
+      </div>
+
+      <!-- Контакти -->
+      <div class="col-md-3 footer-section">
+        <h5>Контакти</h5>
+        <ul>
+          <li>вулиця Яворівська, 17, Івано-Франкове, Львівська область, 81070</li>
+          <li>+380 68 348 6053</li>
+          <li>Пн-Пт: 8:30 - 18:00</li>
+          <li>info@mfurnitura.com</li>
+        </ul>
+      </div>
+
+      <!-- Гугл карта -->
+      <div class="col-md-6">
+        <div class="google-map">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d3937.0472958730957!2d23.727256980824507!3d49.92119635318304!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1z0Lwg0YTRg9GA0L3RltGC0YPRgNCwINGW0LLQsNC90L4g0YTRgNCw0L3QutC-0LLQtQ!5e1!3m2!1suk!2sua!4v1742658584601!5m2!1suk!2sua"
+                  width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
 
 <!-- Повідомлення про додавання товару -->
 <div id="cart-notification" class="cart-notification">

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Деталі товару</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @keyframes cartBounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.2);
+            }
+        }
+
+        .search-container {
+            position: relative;
+            width: 400px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding-right: 50px;
+            font-size: 16px;
+        }
+
+        .search-container .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        .cart-icon-animation {
+            animation: cartBounce 0.5s ease;
+        }
+
+        .cart-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(100%);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .cart-notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        footer {
+            background-color: #f8f9fa;
+            padding: 40px 0;
+            margin-top: 50px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .footer-section {
+            margin-bottom: 20px;
+        }
+
+        .footer-section h5 {
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .footer-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+
+        .footer-section ul li a {
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .footer-section ul li a:hover {
+            color: #000;
+        }
+
+        .google-map {
+            height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        /* Стилі для зображень */
+        .logo-img {
+            width: 135px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+        .product-image {
+            max-width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #f8f9fa;
+        }
+
+        .image-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border: 1px dashed #ccc;
+            border-radius: 5px;
+            height: 400px;
+        }
+
+        .btn-remove {
+            margin-left: 10px;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+<header class="d-flex flex-wrap align-items-center justify-content-between py-3 mb-4 border-bottom">
+    <!-- Лого та кнопка каталогу -->
+    <div class="d-flex align-items-center ms-3">
+        <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+            <img th:src="@{/MfTitle.jpg}" src="/MfTitle.jpg" alt="Логотип" class="logo-img"
+                 onerror="this.src='/no-image.png';this.classList.add('image-placeholder')">
+        </a>
+        <a href="#catalog" class="btn btn-link text-dark ms-3">Каталог</a>
+    </div>
+
+    <!-- Пошук -->
+    <div class="d-flex align-items-center">
+        <div class="search-container">
+            <input class="form-control" type="search" placeholder="Пошук" aria-label="Пошук">
+            <i class="fas fa-search search-icon"></i>
+        </div>
+    </div>
+
+    <!-- Іконки телефону та кошика -->
+    <div class="d-flex align-items-center me-3">
+        <!-- Телефон -->
+        <div class="dropdown me-3">
+            <a href="#" class="text-dark"><i class="fas fa-phone"></i></a>
+            <div class="dropdown-menu p-2">
+                <p>+380 12 345 6789</p>
+            </div>
+        </div>
+
+        <!-- Кошик -->
+        <div class="dropdown me-3">
+            <a href="#" class="text-dark" data-bs-toggle="dropdown">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" th:text="${cartItems != null ? cartItems.size() : 0}">0</span>
+            </a>
+            <div class="dropdown-menu p-2 cart-dropdown">
+                <div th:if="${cartItems != null && !cartItems.isEmpty()}">
+                    <ul>
+                        <li th:each="item : ${cartItems}">
+                            <span th:text="${item.name}"></span> - <span th:text="${item.price} + ' грн'"></span>
+                            <button class="btn btn-danger btn-sm btn-remove"
+                                    th:onclick="'removeFromCart(' + ${item.id} + ')'">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div th:if="${cartItems == null || cartItems.isEmpty()}">
+                    <p>Кошик порожній.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div th:if="${product.imageUrl}" class="text-center">
+                <img th:src="@{'/' + ${product.imageUrl}}"
+                     src="/no-image.png"
+                     alt="Продукт"
+                     class="product-image"
+                     onerror="this.src='/no-image.png';this.classList.add('image-placeholder')">
+            </div>
+            <div th:unless="${product.imageUrl}" class="image-placeholder">
+                <span>Зображення відсутнє</span>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h1 th:text="${product.name}"></h1>
+            <p class="text-muted" th:text="${product.category}"></p>
+            <h3 th:text="${product.price} + ' грн'"></h3>
+            <p th:text="${product.description}"></p>
+            <button class="btn btn-primary" th:onclick="'addToCart(' + ${product.id} + ')'">
+                <i class="fas fa-shopping-cart"></i> Додати до кошика
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Футер -->
+<footer class="container-fluid">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 footer-section">
+                <h5>Соц мережі</h5>
+                <ul>
+                    <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                    <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                    <li><a href="#"><i class="fab fa-telegram"></i> Telegram</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 footer-section">
+                <h5>Контакти</h5>
+                <ul>
+                    <li>вулиця Яворівська, 17, Івано-Франкове, Львівська область, 81070</li>
+                    <li>+380 68 348 6053</li>
+                    <li>Пн-Пт: 8:30 - 18:00</li>
+                    <li>info@mfurnitura.com</li>
+                </ul>
+            </div>
+
+            <div class="col-md-6">
+                <div class="google-map">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d3937.0472958730957!2d23.727256980824507!3d49.92119635318304!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1z0Lwg0YTRg9GA0L3RltGC0YPRgNCwINGW0LLQsNC90L4g0YTRgNCw0L3QutC-0LLQtQ!5e1!3m2!1suk!2sua!4v1742658584601!5m2!1suk!2sua"
+                            width="100%" height="200" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Повідомлення про додавання товару -->
+<div id="cart-notification" class="cart-notification">
+    <i class="fas fa-shopping-cart"></i> Товар додано до кошика
+</div>
+
+<script>
+    // Функції для роботи з кошиком
+    function addToCart(productId) {
+        fetch(`/cart/add?productId=${productId}`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+        })
+            .then(handleResponse)
+            .then(data => {
+                showCartNotification('Товар додано до кошика');
+                updateCartDropdown();
+            })
+            .catch(handleError('Помилка при додаванні товару в кошик'));
+    }
+
+    function removeFromCart(productId) {
+        fetch(`/cart/remove?productId=${productId}`, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'},
+        })
+            .then(handleResponse)
+            .then(data => {
+                showCartNotification('Товар видалено з кошика');
+                updateCartDropdown();
+            })
+            .catch(handleError('Помилка при видаленні товару з кошика'));
+    }
+
+    function handleResponse(response) {
+        if (!response.ok) throw new Error(response.statusText);
+        return response.json();
+    }
+
+    function handleError(message) {
+        return error => {
+            console.error('Помилка:', error);
+            alert(message);
+        };
+    }
+
+    function showCartNotification(message) {
+        const notification = document.getElementById('cart-notification');
+        notification.innerHTML = `<i class="fas fa-shopping-cart"></i> ${message}`;
+        notification.classList.add('show');
+        setTimeout(() => notification.classList.remove('show'), 2000);
+    }
+
+    function updateCartDropdown() {
+        fetch('/cart/items')
+            .then(handleResponse)
+            .then(data => {
+                const cartDropdown = document.querySelector('.cart-dropdown');
+                const cartCount = document.querySelector('.cart-count');
+
+                if (!cartDropdown || !cartCount) return;
+
+                if (data.length > 0) {
+                    cartDropdown.innerHTML = `
+          <ul>${data.map(item => `
+            <li class="d-flex justify-content-between align-items-center mb-2">
+              <span>${item.name} - ${item.price} грн</span>
+              <button class="btn btn-danger btn-sm btn-remove" onclick="removeFromCart(${item.id})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </li>
+          `).join('')}</ul>`;
+                    cartCount.textContent = data.length;
+                } else {
+                    cartDropdown.innerHTML = '<p>Кошик порожній.</p>';
+                    cartCount.textContent = 0;
+                }
+            })
+            .catch(handleError('Помилка при оновленні кошика'));
+    }
+
+    // Ініціалізація обробників помилок зображень
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('img').forEach(img => {
+            img.onerror = function () {
+                if (this.src.includes('no-image.png')) return;
+                this.src = '/no-image.png';
+                this.classList.add('image-placeholder');
+            };
+        });
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
