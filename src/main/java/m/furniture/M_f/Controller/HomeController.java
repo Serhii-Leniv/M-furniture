@@ -1,14 +1,19 @@
 package m.furniture.M_f.Controller;
 
+import m.furniture.M_f.Entity.Call;
 import m.furniture.M_f.Entity.Product;
+import m.furniture.M_f.Service.CallService;
 import m.furniture.M_f.Service.CartService;
 import m.furniture.M_f.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Controller
@@ -19,6 +24,9 @@ public class HomeController {
 
     @Autowired
     private CartService cartService;
+
+    @Autowired
+    private CallService callService;
 
     @GetMapping("/main")
     public String home(Model model, HttpServletRequest request) {
@@ -38,7 +46,23 @@ public class HomeController {
         model.addAttribute("products", products);
         model.addAttribute("categories", categories);
         model.addAttribute("cartItems", cartItems);
+        model.addAttribute("allProducts", products); // Для пошуку
 
         return "index";
+    }
+
+    @PostMapping("/save-phone")
+    @ResponseBody
+    public String savePhoneNumber(@RequestParam String phoneNumber) {
+        try {
+            Call call = new Call();
+            call.setPhoneNumber(phoneNumber);
+            call.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            callService.savePhone(call);
+            return "Дякуємо! Ми зв'яжемося з вами найближчим часом.";
+        } catch (Exception e) {
+            return "Помилка при збереженні номера: " + e.getMessage();
+        }
     }
 }

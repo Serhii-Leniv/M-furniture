@@ -5,7 +5,20 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* Стилі для анімації додавання товару */
+    html, body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body {
+      min-height: 100vh;
+    }
+
+    .content-wrapper {
+      flex: 1;
+    }
+
     @keyframes cartBounce {
       0%, 100% {
         transform: scale(1);
@@ -15,37 +28,32 @@
       }
     }
 
-    .cart-icon-animation {
-      animation: cartBounce 0.5s ease;
+    .search-container {
+      position: relative;
+      width: 400px;
     }
 
-    /* Стилі для повідомлення про додавання товару */
-    .cart-notification {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #28a745;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 5px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      opacity: 0;
-      transform: translateY(100%);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      z-index: 1000;
+    .search-container input {
+      width: 100%;
+      padding-right: 50px;
+      font-size: 16px;
     }
 
-    .cart-notification.show {
-      opacity: 1;
-      transform: translateY(0);
+    .search-container .search-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+      cursor: pointer;
+      font-size: 20px;
     }
 
-    /* Інші стилі */
     .product-carousel {
       display: flex;
       overflow: hidden;
       position: relative;
-      margin-bottom: 140px;
+      margin-bottom: 50px;
     }
 
     .product-carousel img {
@@ -104,29 +112,9 @@
       display: none;
     }
 
-    .search-container {
-      position: relative;
-      width: 400px;
-    }
-
-    .search-container input {
-      width: 100%;
-      padding-right: 50px;
-      font-size: 16px;
-    }
-
-    .search-container .search-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #6c757d;
-      cursor: pointer;
-      font-size: 20px;
-    }
-
     .product-item {
       position: relative;
+      margin-bottom: 20px;
     }
 
     .product-item .cart-icon {
@@ -158,189 +146,246 @@
       font-size: 12px;
     }
 
-    /* Стилі для кнопки видалення */
+    .cart-icon-animation {
+      animation: cartBounce 0.5s ease;
+    }
+
+    .cart-notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      transform: translateY(100%);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    .cart-notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    footer {
+      background-color: #f8f9fa;
+      padding: 40px 0;
+      border-top: 1px solid #e9ecef;
+      margin-top: auto;
+    }
+
+    .logo-img {
+      width: 200px;
+      height: 60px;
+      object-fit: contain;
+    }
+
     .btn-remove {
       margin-left: 10px;
       padding: 2px 6px;
       font-size: 12px;
     }
 
-    /* Стилі для футера */
-    footer {
-      background-color: #f8f9fa;
-      padding: 40px 0;
-      margin-top: 50px;
-      border-top: 1px solid #e9ecef;
-    }
-
-    .footer-section {
-      margin-bottom: 20px;
-    }
-
-    .footer-section h5 {
-      margin-bottom: 15px;
-      font-weight: bold;
-    }
-
-    .footer-section ul {
-      list-style: none;
-      padding: 0;
-    }
-
-    .footer-section ul li {
-      margin-bottom: 10px;
-    }
-
-    .footer-section ul li a {
-      color: #6c757d;
+    .phone-link {
+      color: #000;
       text-decoration: none;
     }
 
-    .footer-section ul li a:hover {
-      color: #000;
+    .category-link {
+      color: #6c757d !important;
+      text-decoration: none;
+      font-size: 1rem;
+      transition: color 0.2s;
     }
 
-    .google-map {
-      height: 200px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      overflow: hidden;
+    .category-link:hover {
+      color: #495057 !important;
+    }
+
+    .social-link {
+      color: #6c757d !important;
+      text-decoration: none;
+    }
+
+    .social-link:hover {
+      color: #495057 !important;
+    }
+
+    .search-dropdown-menu {
+      padding: 10px;
+      width: 400px;
+      max-height: 500px;
+      overflow-y: auto;
+    }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .search-result-item:hover {
+      background-color: #f8f9fa;
+    }
+
+    .search-result-item img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+      margin-right: 15px;
+    }
+
+    .search-result-info {
+      flex: 1;
+    }
+
+    .search-highlight {
+      background-color: #ffeb3b;
+      font-weight: bold;
+      padding: 0 2px;
+    }
+
+    .no-results {
+      padding: 15px;
+      color: #6c757d;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-<header class="d-flex flex-wrap align-items-center justify-content-between py-3 mb-4 border-bottom">
-  <!-- Лого та кнопка каталогу -->
-  <div class="d-flex align-items-center ms-3">
-    <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
-      <img src="MfTitle.jpg" alt="Логотип" width="135" height="40">
-    </a>
-    <a href="#catalog" class="btn btn-link text-dark ms-3">Каталог</a>
-  </div>
-
-  <!-- Пошук -->
-  <div class="d-flex align-items-center">
-    <div class="search-container">
-      <input class="form-control" type="search" placeholder="Пошук" aria-label="Пошук">
-      <i class="fas fa-search search-icon"></i>
-    </div>
-  </div>
-
-  <!-- Іконки телефону, акаунту та кошика -->
-  <div class="d-flex align-items-center me-3">
-    <!-- Телефон -->
-    <div class="dropdown me-3">
-      <a href="#" class="text-dark"><i class="fas fa-phone"></i></a>
-      <div class="dropdown-menu p-2">
-        <p>+380 12 345 6789</p>
-      </div>
-    </div>
-
-    <!-- Кошик -->
-    <div class="dropdown me-3">
-      <a href="#" class="text-dark" data-bs-toggle="dropdown">
-        <i class="fas fa-shopping-cart"></i>
-        <span class="cart-count" th:text="${cartItems != null ? cartItems.size() : 0}"></span>
+<div class="content-wrapper">
+  <header class="d-flex flex-wrap align-items-center justify-content-between py-3 mb-4 border-bottom">
+    <div class="d-flex align-items-center ms-3">
+      <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+        <img th:src="@{/MfTitle.jpg}" src="/MfTitle.jpg" alt="Логотип" class="logo-img"
+             onerror="this.src='/no-image.png';this.classList.add('image-placeholder')">
       </a>
-      <div class="dropdown-menu p-2 cart-dropdown">
-        <div th:if="${cartItems != null && !cartItems.isEmpty()}">
-          <ul>
-            <li th:each="item : ${cartItems}">
-              <span th:text="${item.name}"></span> - <span th:text="${item.price} + ' грн'"></span>
-              <!-- Кнопка видалення -->
-              <button class="btn btn-danger btn-sm btn-remove" th:onclick="'removeFromCart(' + ${item.id} + ')'">
-                <i class="fas fa-trash"></i>
-              </button>
-            </li>
-          </ul>
-        </div>
-        <div th:if="${cartItems == null || cartItems.isEmpty()}">
-          <p>Кошик порожній.</p>
-        </div>
-      </div>
+      <a href="/main" class="btn btn-link text-dark ms-3">Каталог</a>
     </div>
-  </div>
-</header>
 
-<div class="container">
-  <!-- Заголовок "Про нас" -->
-  <h1 class="text-center">Про нас</h1>
-  <div class="row">
-    <div class="col-md-6">
-      <p>Текст опису про компанію. Тут може бути інформація про історію, місію та цінності компанії.</p>
-    </div>
-    <div class="col-md-6">
-      <p>Додатковий текст опису. Наприклад, інформація про якість продукції, гарантії або переваги співпраці з нами.</p>
-    </div>
-  </div>
-
-  <!-- Заголовок "Каталог" -->
-  <h2 id="catalog" class="text-center mt-5">Каталог</h2>
-
-  <!-- Категорії -->
-  <div class="row text-center mt-4">
-    <div th:each="category : ${categories}" class="col-md-3">
-      <h4><a th:href="'#' + ${category}" th:text="${category}" class="text-dark"></a></h4>
-    </div>
-  </div>
-
-  <!-- Секції з продуктами за категоріями -->
-  <div th:each="category : ${categories}" class="category-section">
-    <h3 th:text="${category}"></h3>
-    <div class="product-carousel">
-      <div class="d-flex">
-        <!-- Продукти -->
-        <div th:each="product : ${products}" th:if="${product.category == category}" class="product-item">
-          <a th:href="@{/product/{id}(id=${product.id})}"> <!-- Посилання на сторінку товару -->
-            <img th:src="${product.imageUrl}" alt="Продукт">
-          </a>
-          <!-- Іконка кошика -->
-          <a class="cart-icon text-dark" th:onclick="'addToCart(' + ${product.id} + ')'">
-            <i class="fas fa-shopping-cart"></i>
-          </a>
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <h5 th:text="${product.name}"></h5>
-              <p th:text="${product.price} + ' грн'"></p>
-            </div>
+    <div class="d-flex align-items-center">
+      <div class="search-container dropdown">
+        <input class="form-control" type="search" id="searchInput" placeholder="Пошук товарів" aria-label="Пошук"
+               data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-search search-icon" id="searchButton"></i>
+        <div class="dropdown-menu search-dropdown-menu" id="searchResultsDropdown">
+          <div class="list-group" id="searchResultsList">
+            <!-- Результати пошуку -->
           </div>
         </div>
       </div>
-      <!-- Кнопки прокрутки -->
-      <button class="carousel-arrow left" onclick="scrollProducts(this, -1)"><i class="fas fa-chevron-left"></i>
-      </button>
-      <button class="carousel-arrow right" onclick="scrollProducts(this, 1)"><i class="fas fa-chevron-right"></i>
-      </button>
+    </div>
+
+    <div class="d-flex align-items-center me-3">
+      <a href="tel:+380671234567" class="phone-link me-3">
+        <i class="fas fa-phone"></i> +380 67 123 4567
+      </a>
+
+      <div class="dropdown me-3">
+        <a href="#" class="text-dark" data-bs-toggle="dropdown">
+          <i class="fas fa-shopping-cart"></i>
+          <span class="cart-count" th:text="${cartItems != null ? cartItems.size() : 0}">0</span>
+        </a>
+        <div class="dropdown-menu p-2 cart-dropdown">
+          <div th:if="${cartItems != null && !cartItems.isEmpty()}">
+            <ul>
+              <li th:each="item : ${cartItems}">
+                <span th:text="${item.name}"></span> - <span th:text="${item.price} + ' грн'"></span>
+                <button class="btn btn-danger btn-sm btn-remove"
+                        th:onclick="'removeFromCart(' + ${item.id} + ')'">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div th:if="${cartItems == null || cartItems.isEmpty()}">
+            <p>Кошик порожній.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1 class="text-center">Про нас</h1>
+    <div class="row">
+      <div class="col-md-6">
+        <p>Текст опису про компанію. Тут може бути інформація про історію, місію та цінності компанії.</p>
+      </div>
+      <div class="col-md-6">
+        <p>Додатковий текст опису. Наприклад, інформація про якість продукції, гарантії або переваги співпраці з
+          нами.</p>
+      </div>
+    </div>
+
+    <h2 id="catalog" class="text-center mt-5">Каталог</h2>
+
+    <div class="row text-center mt-4">
+      <div th:each="category : ${categories}" class="col-md-3">
+        <h5><a th:href="'#' + ${category}" th:text="${category}" class="category-link"></a></h5>
+      </div>
+    </div>
+
+    <div th:each="category : ${categories}" class="category-section" th:id="${category}">
+      <h3 th:text="${category}"></h3>
+      <div class="product-carousel">
+        <div class="d-flex">
+          <div th:each="product : ${products}" th:if="${product.category == category}" class="product-item">
+            <a th:href="@{/product/{id}(id=${product.id})}">
+              <img th:src="@{'/' + ${product.imageUrl}}" src="/no-image.png" alt="Продукт"
+                   onerror="this.src='/no-image.png'">
+            </a>
+            <a class="cart-icon text-dark" th:onclick="'addToCart(' + ${product.id} + ')'">
+              <i class="fas fa-shopping-cart"></i>
+            </a>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <div>
+                <h5 class="product-name" th:text="${product.name}"></h5>
+                <p th:text="${product.price} + ' грн'"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button class="carousel-arrow left" onclick="scrollProducts(this, -1)">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="carousel-arrow right" onclick="scrollProducts(this, 1)">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- Футер -->
 <footer class="container-fluid">
   <div class="container">
     <div class="row">
-      <!-- Соц мережі -->
       <div class="col-md-3 footer-section">
         <h5>Соц мережі</h5>
-        <ul>
-          <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-          <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
-          <li><a href="#"><i class="fab fa-telegram"></i> Telegram</a></li>
+        <ul class="list-unstyled">
+          <li><a href="#" class="social-link"><i class="fab fa-facebook me-2"></i>Facebook</a></li>
+          <li><a href="#" class="social-link"><i class="fab fa-instagram me-2"></i>Instagram</a></li>
+          <li><a href="#" class="social-link"><i class="fab fa-telegram me-2"></i>Telegram</a></li>
         </ul>
       </div>
 
-      <!-- Контакти -->
       <div class="col-md-3 footer-section">
         <h5>Контакти</h5>
-        <ul>
-          <li>вулиця Яворівська, 17, Івано-Франкове, Львівська область, 81070</li>
-          <li>+380 68 348 6053</li>
-          <li>Пн-Пт: 8:30 - 18:00</li>
-          <li>info@mfurnitura.com</li>
+        <ul class="list-unstyled">
+          <li><i class="fas fa-map-marker-alt me-2"></i>вулиця Яворівська, 17, Івано-Франкове, Львівська область, 81070
+          </li>
+          <li><i class="fas fa-phone me-2"></i>+380 68 348 6053</li>
+          <li><i class="fas fa-clock me-2"></i>Пн-Пт: 8:30 - 18:00</li>
+          <li><i class="fas fa-envelope me-2"></i>info@mfurnitura.com</li>
         </ul>
       </div>
 
-      <!-- Гугл карта -->
       <div class="col-md-6">
         <div class="google-map">
           <iframe src="https://www.google.com/maps/embed?pb=!1m16!1m12!1m3!1d3937.0472958730957!2d23.727256980824507!3d49.92119635318304!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!2m1!1z0Lwg0YTRg9GA0L3RltGC0YPRgNCwINGW0LLQsNC90L4g0YTRgNCw0L3QutC-0LLQtQ!5e1!3m2!1suk!2sua!4v1742658584601!5m2!1suk!2sua"
@@ -351,13 +396,43 @@
   </div>
 </footer>
 
-<!-- Повідомлення про додавання товару -->
 <div id="cart-notification" class="cart-notification">
   <i class="fas fa-shopping-cart"></i> Товар додано до кошика
 </div>
 
+<!-- Модальне вікно для консультації -->
+<div class="modal fade" id="consultationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Замовити консультацію</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="consultationForm">
+          <div class="mb-3">
+            <label for="name" class="form-label">Ваше ім'я</label>
+            <input type="text" class="form-control" id="name" required>
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Номер телефону</label>
+            <input type="tel" class="form-control" id="phone" required>
+          </div>
+          <div class="mb-3">
+            <label for="question" class="form-label">Ваше запитання (необов'язково)</label>
+            <textarea class="form-control" id="question" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
+        <button type="button" class="btn btn-primary" onclick="submitConsultation()">Надіслати</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
-  // Функція для прокрутки продуктів
   function scrollProducts(button, direction) {
     const carousel = button.closest('.product-carousel').querySelector('.d-flex');
     if (carousel) {
@@ -368,102 +443,201 @@
     }
   }
 
-  // Функція для додавання товару до кошика
+  function searchProducts() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    const searchResultsList = document.getElementById('searchResultsList');
+
+    if (searchTerm === '') {
+      hideSearchResults();
+      return;
+    }
+
+    const productItems = document.querySelectorAll('.product-item');
+    let foundResults = false;
+
+    searchResultsList.innerHTML = '';
+
+    productItems.forEach(item => {
+      const productName = item.querySelector('.product-name').textContent.toLowerCase();
+      const productLink = item.querySelector('a').getAttribute('href');
+      const productImage = item.querySelector('img').getAttribute('src');
+      const productPrice = item.querySelector('p').textContent;
+
+      if (productName.includes(searchTerm)) {
+        foundResults = true;
+        const resultItem = document.createElement('a');
+        resultItem.href = productLink;
+        resultItem.className = 'list-group-item list-group-item-action search-result-item';
+
+        const highlightedName = highlightSearchTerm(productName, searchTerm);
+
+        resultItem.innerHTML = `
+          <img src="${productImage}" onerror="this.src='/no-image.png'">
+          <div class="search-result-info">
+            <div>${highlightedName}</div>
+            <small class="text-muted">${productPrice}</small>
+          </div>
+        `;
+
+        searchResultsList.appendChild(resultItem);
+      }
+    });
+
+    if (!foundResults) {
+      searchResultsList.innerHTML = '<div class="no-results">Нічого не знайдено</div>';
+    }
+
+    showSearchResults();
+  }
+
+  function highlightSearchTerm(text, term) {
+    const regex = new RegExp(term, 'gi');
+    return text.replace(regex, match => `<span class="search-highlight">${match}</span>`);
+  }
+
+  function showSearchResults() {
+    const dropdown = document.getElementById('searchResultsDropdown');
+    dropdown.classList.add('show');
+    dropdown.style.display = 'block';
+  }
+
+  function hideSearchResults() {
+    const dropdown = document.getElementById('searchResultsDropdown');
+    dropdown.classList.remove('show');
+    dropdown.style.display = 'none';
+  }
+
   function addToCart(productId) {
-    fetch(`http://localhost:8080/cart/add?productId=${productId}`, {
+    fetch(`/cart/add?productId=${productId}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
     })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Помилка при додаванні товару в кошик');
-              }
-              return response.json();
-            })
+            .then(handleResponse)
             .then(data => {
-              showCartNotification('Товар додано до кошика'); // Показуємо повідомлення
-              updateCartDropdown(); // Оновлюємо кошик
+              showCartNotification('Товар додано до кошика');
+              updateCartDropdown();
             })
-            .catch(error => {
-              console.error('Помилка:', error);
-              alert('Помилка при додаванні товару в кошик');
-            });
+            .catch(handleError('Помилка при додаванні товару в кошик'));
   }
 
-  // Функція для видалення товару з кошика
   function removeFromCart(productId) {
-    fetch(`http://localhost:8080/cart/remove?productId=${productId}`, {
+    fetch(`/cart/remove?productId=${productId}`, {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: {'Content-Type': 'application/json'},
     })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Помилка при видаленні товару з кошика');
-              }
-              return response.json();
-            })
+            .then(handleResponse)
             .then(data => {
-              showCartNotification('Товар видалено з кошика'); // Показуємо повідомлення
-              updateCartDropdown(); // Оновлюємо кошик
+              showCartNotification('Товар видалено з кошика');
+              updateCartDropdown();
             })
-            .catch(error => {
-              console.error('Помилка:', error);
-              alert('Помилка при видаленні товару з кошика');
-            });
+            .catch(handleError('Помилка при видаленні товару з кошика'));
   }
 
-  // Функція для показу повідомлення
+  function handleResponse(response) {
+    if (!response.ok) throw new Error(response.statusText);
+    return response.json();
+  }
+
+  function handleError(message) {
+    return error => {
+      console.error('Помилка:', error);
+      alert(message);
+    };
+  }
+
   function showCartNotification(message) {
     const notification = document.getElementById('cart-notification');
     notification.innerHTML = `<i class="fas fa-shopping-cart"></i> ${message}`;
-    notification.classList.add('show'); // Показуємо повідомлення
-    setTimeout(() => {
-      notification.classList.remove('show'); // Ховаємо повідомлення через 2 секунди
-    }, 2000);
+    notification.classList.add('show');
+    setTimeout(() => notification.classList.remove('show'), 2000);
   }
 
-  // Функція для оновлення випадаючого меню кошика
   function updateCartDropdown() {
-    fetch('http://localhost:8080/cart/items')
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Помилка при отриманні даних з кошика');
-              }
-              return response.json();
-            })
+    fetch('/cart/items')
+            .then(handleResponse)
             .then(data => {
-              const cartDropdown = document.querySelector('.dropdown-menu.cart-dropdown');
+              const cartDropdown = document.querySelector('.cart-dropdown');
               const cartCount = document.querySelector('.cart-count');
 
-              if (cartDropdown && cartCount) {
-                if (data.length > 0) {
-                  const cartItemsHtml = data.map(item => `
-            <li>
-              <span>${item.name}</span> - <span>${item.price} грн</span>
-              <button class="btn btn-danger btn-sm btn-remove" onclick="removeFromCart(${item.id})">
-                <i class="fas fa-trash"></i>
-              </button>
-            </li>
-          `).join('');
-                  cartDropdown.innerHTML = `<ul>${cartItemsHtml}</ul>`;
-                  cartCount.textContent = data.length;
-                } else {
-                  cartDropdown.innerHTML = '<p>Кошик порожній.</p>';
-                  cartCount.textContent = 0;
-                }
+              if (!cartDropdown || !cartCount) return;
+
+              if (data.length > 0) {
+                cartDropdown.innerHTML = `
+            <ul>${data.map(item => `
+              <li class="d-flex justify-content-between align-items-center mb-2">
+                <span>${item.name} - ${item.price} грн</span>
+                <button class="btn btn-danger btn-sm btn-remove" onclick="removeFromCart(${item.id})">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </li>
+            `).join('')}</ul>`;
+                cartCount.textContent = data.length;
+              } else {
+                cartDropdown.innerHTML = '<p>Кошик порожній.</p>';
+                cartCount.textContent = 0;
               }
             })
-            .catch(error => {
-              console.error('Помилка при оновленні кошика:', error);
-            });
+            .catch(handleError('Помилка при оновленні кошика'));
   }
+
+  function requestConsultation() {
+    const consultationModal = new bootstrap.Modal(document.getElementById('consultationModal'));
+    consultationModal.show();
+  }
+
+  function submitConsultation() {
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const question = document.getElementById('question').value;
+
+    if (!name || !phone) {
+      alert("Будь ласка, заповніть обов'язкові поля");
+      return;
+    }
+
+    console.log("Консультація замовлена:", {name, phone, question});
+
+    alert("Дякуємо за заявку! Ми зв'яжемося з вами найближчим часом.");
+    const consultationModal = bootstrap.Modal.getInstance(document.getElementById('consultationModal'));
+    consultationModal.hide();
+
+    document.getElementById('consultationForm').reset();
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+
+    let searchTimeout;
+
+    searchInput.addEventListener('input', function () {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(searchProducts, 300);
+    });
+
+    searchButton.addEventListener('click', searchProducts);
+
+    searchInput.addEventListener('keypress', function (e) {
+      if (e.key === 'Enter') {
+        searchProducts();
+      }
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.search-container') && !e.target.closest('#searchResultsDropdown')) {
+        hideSearchResults();
+      }
+    });
+
+    document.querySelectorAll('img').forEach(img => {
+      img.onerror = function () {
+        if (this.src.includes('no-image.png')) return;
+        this.src = '/no-image.png';
+      };
+    });
+  });
 </script>
 
-<!-- Підключення Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
