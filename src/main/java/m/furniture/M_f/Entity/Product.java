@@ -33,7 +33,4 @@ public class Product {
     @JsonIgnore
     private String imageUrl;
 
-    @JsonIgnore // Ігноруємо це поле при серіалізації JSON
-    @ManyToMany(mappedBy = "products")
-    private List<Cart> carts = new ArrayList<>();
 }
