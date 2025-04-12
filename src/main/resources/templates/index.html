@@ -15,6 +15,90 @@
       min-height: 100vh;
     }
 
+    .cart-dropdown {
+      min-width: 350px;
+      padding: 15px;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-item-img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      margin-right: 15px;
+      border-radius: 4px;
+    }
+
+    .cart-item-info {
+      flex-grow: 1;
+    }
+
+    .cart-item-name {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .cart-item-price {
+      color: #6c757d;
+      font-size: 14px;
+    }
+
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+    }
+
+    .quantity-btn {
+      width: 30px;
+      height: 30px;
+      border: 1px solid #ddd;
+      background: #f8f9fa;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .quantity-btn:hover {
+      background: #e9ecef;
+    }
+
+    .quantity-value {
+      min-width: 30px;
+      text-align: center;
+      margin: 0 5px;
+    }
+
+    .cart-total {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .empty-cart {
+      text-align: center;
+      padding: 20px;
+      color: #6c757d;
+    }
+
+    .remove-item {
+      color: #dc3545;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .remove-item:hover {
+      text-decoration: underline;
+    }
+
     .content-wrapper {
       flex: 1;
     }
@@ -290,22 +374,21 @@
       <div class="dropdown me-3">
         <a href="#" class="text-dark" data-bs-toggle="dropdown">
           <i class="fas fa-shopping-cart"></i>
-          <span class="cart-count" th:text="${cartItems != null ? cartItems.size() : 0}">0</span>
+          <span class="cart-count" id="cartCount">0</span>
         </a>
-        <div class="dropdown-menu p-2 cart-dropdown">
-          <div th:if="${cartItems != null && !cartItems.isEmpty()}">
-            <ul>
-              <li th:each="item : ${cartItems}">
-                <span th:text="${item.name}"></span> - <span th:text="${item.price} + ' грн'"></span>
-                <button class="btn btn-danger btn-sm btn-remove"
-                        th:onclick="'removeFromCart(' + ${item.id} + ')'">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </li>
-            </ul>
+        <div class="dropdown-menu dropdown-menu-end cart-dropdown">
+          <div id="cartItemsContainer" class="px-3">
+            <div class="empty-cart">
+              <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+              <p>Кошик порожній</p>
+            </div>
           </div>
-          <div th:if="${cartItems == null || cartItems.isEmpty()}">
-            <p>Кошик порожній.</p>
+          <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+            <strong>Всього:</strong>
+            <span id="cartTotal" class="cart-total">0 грн</span>
+          </div>
+          <div class="px-3 pb-2">
+            <a href="/checkout" class="btn btn-primary w-100">Оформити замовлення</a>
           </div>
         </div>
       </div>
@@ -400,37 +483,6 @@
   <i class="fas fa-shopping-cart"></i> Товар додано до кошика
 </div>
 
-<!-- Модальне вікно для консультації -->
-<div class="modal fade" id="consultationModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Замовити консультацію</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="consultationForm">
-          <div class="mb-3">
-            <label for="name" class="form-label">Ваше ім'я</label>
-            <input type="text" class="form-control" id="name" required>
-          </div>
-          <div class="mb-3">
-            <label for="phone" class="form-label">Номер телефону</label>
-            <input type="tel" class="form-control" id="phone" required>
-          </div>
-          <div class="mb-3">
-            <label for="question" class="form-label">Ваше запитання (необов'язково)</label>
-            <textarea class="form-control" id="question" rows="3"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрити</button>
-        <button type="button" class="btn btn-primary" onclick="submitConsultation()">Надіслати</button>
-      </div>
-    </div>
-  </div>
-</div>
 
 <script>
   function scrollProducts(button, direction) {
@@ -508,29 +560,117 @@
   }
 
   function addToCart(productId) {
-    fetch(`/cart/add?productId=${productId}`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
+    fetch(`/api/cart/add?productId=${productId}`, {
+      method: 'POST'
     })
             .then(handleResponse)
             .then(data => {
-              showCartNotification('Товар додано до кошика');
+              showCartNotification(data.message);
               updateCartDropdown();
             })
             .catch(handleError('Помилка при додаванні товару в кошик'));
   }
 
   function removeFromCart(productId) {
-    fetch(`/cart/remove?productId=${productId}`, {
-      method: 'DELETE',
-      headers: {'Content-Type': 'application/json'},
+    fetch(`/api/cart/remove?productId=${productId}`, {
+      method: 'DELETE'
     })
             .then(handleResponse)
             .then(data => {
-              showCartNotification('Товар видалено з кошика');
+              showCartNotification(data.message);
               updateCartDropdown();
             })
             .catch(handleError('Помилка при видаленні товару з кошика'));
+  }
+
+  function increaseQuantity(productId) {
+    fetch(`/api/cart/increase?productId=${productId}`, {
+      method: 'POST'
+    })
+            .then(handleResponse)
+            .then(data => {
+              updateCartDropdown();
+            })
+            .catch(handleError('Помилка при збільшенні кількості'));
+  }
+
+  function decreaseQuantity(productId) {
+    fetch(`/api/cart/decrease?productId=${productId}`, {
+      method: 'POST'
+    })
+            .then(handleResponse)
+            .then(data => {
+              updateCartDropdown();
+            })
+            .catch(handleError('Помилка при зменшенні кількості'));
+  }
+
+  function updateCartDropdown() {
+    fetch('/api/cart/items')
+            .then(handleResponse)
+            .then(data => {
+              const cartItemsContainer = document.getElementById('cartItemsContainer');
+              const cartCount = document.getElementById('cartCount');
+              const cartTotal = document.getElementById('cartTotal');
+
+              if (!cartItemsContainer || !cartCount || !cartTotal) return;
+
+              if (data.items && data.items.length > 0) {
+                // Групуємо товари по ID для підрахунку кількості
+                const groupedItems = data.items.reduce((acc, item) => {
+                  if (!acc[item.id]) {
+                    acc[item.id] = {
+                      ...item,
+                      quantity: 0,
+                      imageUrl: item.imageUrl || '/no-image.png'
+                    };
+                  }
+                  acc[item.id].quantity++;
+                  return acc;
+                }, {});
+
+                cartItemsContainer.innerHTML = `
+                <h6 class="mb-3">Товари у кошику</h6>
+                ${Object.values(groupedItems).map(item => `
+                    <div class="cart-item">
+                        <img src="${item.imageUrl}"
+                             onerror="this.src='/no-image.png'"
+                             class="cart-item-img">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.name}</div>
+                            <div class="cart-item-price">${item.price} грн/шт</div>
+                            <div class="cart-item-controls">
+                                <button class="quantity-btn"
+                                        onclick="decreaseQuantity(${item.id})">-</button>
+                                <span class="quantity-value">${item.quantity}</span>
+                                <button class="quantity-btn"
+                                        onclick="increaseQuantity(${item.id})">+</button>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <div class="fw-bold">${(item.price * item.quantity).toFixed(2)} грн</div>
+                            <div class="remove-item"
+                                 onclick="removeFromCart(${item.id})">
+                                Видалити
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+                cartCount.textContent = data.items.length;
+                cartTotal.textContent = data.total.toFixed(2) + ' грн';
+              } else {
+                cartItemsContainer.innerHTML = `
+                <div class="empty-cart">
+                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                    <p>Кошик порожній</p>
+                </div>
+            `;
+                cartCount.textContent = '0';
+                cartTotal.textContent = '0 грн';
+              }
+            })
+            .catch(handleError('Помилка при оновленні кошика'));
   }
 
   function handleResponse(response) {
@@ -552,38 +692,6 @@
     setTimeout(() => notification.classList.remove('show'), 2000);
   }
 
-  function updateCartDropdown() {
-    fetch('/cart/items')
-            .then(handleResponse)
-            .then(data => {
-              const cartDropdown = document.querySelector('.cart-dropdown');
-              const cartCount = document.querySelector('.cart-count');
-
-              if (!cartDropdown || !cartCount) return;
-
-              if (data.length > 0) {
-                cartDropdown.innerHTML = `
-            <ul>${data.map(item => `
-              <li class="d-flex justify-content-between align-items-center mb-2">
-                <span>${item.name} - ${item.price} грн</span>
-                <button class="btn btn-danger btn-sm btn-remove" onclick="removeFromCart(${item.id})">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </li>
-            `).join('')}</ul>`;
-                cartCount.textContent = data.length;
-              } else {
-                cartDropdown.innerHTML = '<p>Кошик порожній.</p>';
-                cartCount.textContent = 0;
-              }
-            })
-            .catch(handleError('Помилка при оновленні кошика'));
-  }
-
-  function requestConsultation() {
-    const consultationModal = new bootstrap.Modal(document.getElementById('consultationModal'));
-    consultationModal.show();
-  }
 
   function submitConsultation() {
     const name = document.getElementById('name').value;

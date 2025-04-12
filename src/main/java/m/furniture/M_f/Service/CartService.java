@@ -38,6 +38,20 @@ public class CartService {
         return products;
     }
 
+    public double calculateTotal(HttpServletRequest request) {
+        Map<Long, Integer> cartMap = readCartMapFromCookies(request);
+        double total = 0.0;
+
+        for (Map.Entry<Long, Integer> entry : cartMap.entrySet()) {
+            Optional<Product> productOpt = productRepository.findById(entry.getKey());
+            if (productOpt.isPresent()) {
+                total += productOpt.get().getPrice() * entry.getValue();
+            }
+        }
+
+        return total;
+    }
+
     public void addProductToCart(Long productId, HttpServletRequest request, HttpServletResponse response) {
         Map<Long, Integer> cartMap = readCartMapFromCookies(request);
         cartMap.put(productId, cartMap.getOrDefault(productId, 0) + 1);
@@ -46,13 +60,23 @@ public class CartService {
 
     public void removeProductFromCart(Long productId, HttpServletRequest request, HttpServletResponse response) {
         Map<Long, Integer> cartMap = readCartMapFromCookies(request);
-        if (cartMap.containsKey(productId)) {
-            int count = cartMap.get(productId);
-            if (count > 1) {
-                cartMap.put(productId, count - 1);
-            } else {
-                cartMap.remove(productId);
-            }
+        cartMap.remove(productId);
+        writeCartMapToCookies(cartMap, response);
+    }
+
+    public void increaseProductQuantity(Long productId, HttpServletRequest request, HttpServletResponse response) {
+        Map<Long, Integer> cartMap = readCartMapFromCookies(request);
+        cartMap.put(productId, cartMap.getOrDefault(productId, 0) + 1);
+        writeCartMapToCookies(cartMap, response);
+    }
+
+    public void decreaseProductQuantity(Long productId, HttpServletRequest request, HttpServletResponse response) {
+        Map<Long, Integer> cartMap = readCartMapFromCookies(request);
+        int count = cartMap.getOrDefault(productId, 0);
+        if (count > 1) {
+            cartMap.put(productId, count - 1);
+        } else {
+            cartMap.remove(productId);
         }
         writeCartMapToCookies(cartMap, response);
     }
