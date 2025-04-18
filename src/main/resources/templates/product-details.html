@@ -159,13 +159,17 @@
 
     .cart-count {
       position: absolute;
-      top: -10px;
-      right: -10px;
+      top: -5px;
+      right: -5px;
       background-color: red;
       color: white;
       border-radius: 50%;
       padding: 2px 6px;
       font-size: 12px;
+    }
+
+    .dropdown-toggle {
+      position: relative;
     }
 
     .cart-notification {
@@ -284,11 +288,12 @@
       </a>
 
       <div class="dropdown me-3">
-        <a href="#" class="text-dark" data-bs-toggle="dropdown">
+        <a href="#" class="text-dark position-relative" data-bs-toggle="dropdown">
           <i class="fas fa-shopping-cart"></i>
-          <span class="cart-count" id="cartCount">0</span>
+          <span class="cart-count position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                id="cartCount">0</span>
         </a>
-        <div class="dropdown-menu dropdown-menu-end cart-dropdown">
+        <div class="dropdown-menu dropdown-menu-end cart-dropdown" onclick="event.stopPropagation()">
           <div id="cartItemsContainer" class="px-3">
             <div class="empty-cart">
               <i class="fas fa-shopping-cart fa-2x mb-2"></i>
@@ -490,42 +495,42 @@
                 }, {});
 
                 cartItemsContainer.innerHTML = `
-            <h6 class="mb-3">Товари у кошику</h6>
-            ${Object.values(groupedItems).map(item => `
-                <div class="cart-item">
-                    <img src="${item.imageUrl}"
-                         onerror="this.src='/no-image.png'"
-                         class="cart-item-img">
-                    <div class="cart-item-info">
-                        <div class="cart-item-name">${item.name}</div>
-                        <div class="cart-item-price">${item.price} грн/шт</div>
-                        <div class="cart-item-controls">
-                            <button class="quantity-btn"
-                                    onclick="decreaseQuantity(${item.id})">-</button>
-                            <span class="quantity-value">${item.quantity}</span>
-                            <button class="quantity-btn"
-                                    onclick="increaseQuantity(${item.id})">+</button>
-                        </div>
-                    </div>
-                    <div class="text-end">
-                        <div class="fw-bold">${(item.price * item.quantity).toFixed(2)} грн</div>
-                        <div class="remove-item"
-                             onclick="removeFromCart(${item.id})">
-                            Видалити
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-          `;
+          <h6 class="mb-3">Товари у кошику</h6>
+          ${Object.values(groupedItems).map(item => `
+              <div class="cart-item">
+                  <img src="${item.imageUrl}"
+                       onerror="this.src='/no-image.png'"
+                       class="cart-item-img">
+                  <div class="cart-item-info">
+                      <div class="cart-item-name">${item.name}</div>
+                      <div class="cart-item-price">${item.price} грн/шт</div>
+                      <div class="cart-item-controls">
+                          <button class="quantity-btn"
+                                  onclick="event.stopPropagation(); decreaseQuantity(${item.id})">-</button>
+                          <span class="quantity-value">${item.quantity}</span>
+                          <button class="quantity-btn"
+                                  onclick="event.stopPropagation(); increaseQuantity(${item.id})">+</button>
+                      </div>
+                  </div>
+                  <div class="text-end">
+                      <div class="fw-bold">${(item.price * item.quantity).toFixed(2)} грн</div>
+                      <div class="remove-item"
+                           onclick="event.stopPropagation(); removeFromCart(${item.id})">
+                          Видалити
+                      </div>
+                  </div>
+              </div>
+          `).join('')}
+        `;
                 cartCount.textContent = data.items.length;
                 cartTotal.textContent = data.total.toFixed(2) + ' грн';
               } else {
                 cartItemsContainer.innerHTML = `
-            <div class="empty-cart">
-                <i class="fas fa-shopping-cart fa-2x mb-2"></i>
-                <p>Кошик порожній</p>
-            </div>
-          `;
+          <div class="empty-cart">
+              <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+              <p>Кошик порожній</p>
+          </div>
+        `;
                 cartCount.textContent = '0';
                 cartTotal.textContent = '0 грн';
               }
@@ -707,6 +712,14 @@
       e.preventDefault();
       submitOneClickOrder();
     });
+
+    // Додаємо обробник для кошика, щоб він не закривався при кліку всередині
+    const cartDropdown = document.querySelector('.cart-dropdown');
+    if (cartDropdown) {
+      cartDropdown.addEventListener('click', function (e) {
+        e.stopPropagation();
+      });
+    }
   });
 </script>
 
