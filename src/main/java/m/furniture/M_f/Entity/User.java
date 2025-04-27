@@ -25,15 +25,15 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String phone;
-
     @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)
-    private String role = "ROLE_USER"; // Роль користувача
+    private String phone;
+
+    @Column(nullable = false)
+    private String role = "ROLE_USER";
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Order> orders; // Замовлення користувача
+    private List<Order> orders;
 }

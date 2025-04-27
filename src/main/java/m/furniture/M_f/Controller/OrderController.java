@@ -8,7 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.List;
 
 @Controller
 public class OrderController {
@@ -23,22 +27,25 @@ public class OrderController {
     public String placeOrder() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
-            // Отримуємо поточного користувача
             String username = authentication.getName();
             User user = userService.findByUsername(username);
 
-            // Створюємо нове замовлення
             Order order = new Order();
             order.setUser(user);
-            // Додаємо продукти з кошика (логіка для кошика)
             order.setStatus("PENDING");
-
-            // Зберігаємо замовлення
             orderService.saveOrder(order);
 
             return "redirect:/main";
-        } else {
-            return "redirect:/login"; // Перенаправлення на сторінку входу
         }
+        return "redirect:/login";
+    }
+
+    @GetMapping("/orders")
+    public String getUserOrders(Model model, Authentication authentication) {
+        String username = authentication.getName();
+        User user = userService.findByUsername(username);
+        List<Order> orders = orderService.getOrdersByUser(user);
+        model.addAttribute("orders", orders);
+        return "orders";
     }
 }
