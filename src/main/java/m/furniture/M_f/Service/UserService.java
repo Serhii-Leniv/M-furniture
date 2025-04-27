@@ -42,6 +42,10 @@ public class UserService implements UserDetailsService {
         return userRepository.existsByUsername(username);
     }
 
+    public boolean phoneExists(String phone) {
+        return userRepository.existsByPhone(phone);
+    }
+
     @Override
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username);
