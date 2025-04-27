@@ -105,10 +105,10 @@
 
     @keyframes cartBounce {
       0%, 100% {
-        transform: scale(1);
+        transform: translateY(0);
       }
       50% {
-        transform: scale(1.2);
+        transform: translateY(-5px);
       }
     }
 
@@ -324,6 +324,28 @@
       background-color: #0b5ed7;
       transform: translateY(-3px);
     }
+
+    /* Стилі для бейджа кошика */
+    .cart-icon-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: #dc3545;
+      color: white;
+      border-radius: 50%;
+      padding: 0.25em 0.6em;
+      font-size: 12px;
+      min-width: 20px;
+      text-align: center;
+      line-height: 1.3;
+      transform: translate(50%, -50%);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
   </style>
 </head>
 <body>
@@ -376,9 +398,9 @@
       </div>
 
       <div class="dropdown me-3">
-        <a href="#" class="text-dark" data-bs-toggle="dropdown">
+        <a href="#" class="text-dark" data-bs-toggle="dropdown" style="position: relative;">
           <i class="fas fa-shopping-cart"></i>
-          <span class="cart-count" id="cartCount">0</span>
+          <span class="cart-badge" id="cartCount">0</span>
         </a>
         <div class="dropdown-menu dropdown-menu-end cart-dropdown" onclick="event.stopPropagation()">
           <div id="cartItemsContainer" class="px-3">
@@ -446,7 +468,6 @@
           </div>
         </div>
       </div>
-      <!-- Додамо кнопки управління -->
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
         <span class="visually-hidden">Попередній</span>
@@ -523,25 +544,16 @@
 
 <script>
   function selectCategory(category) {
-    // Ховаємо карусель
     document.getElementById('carouselExample').classList.add('hidden');
-
-    // Показуємо контейнер з категоріями
     document.getElementById('categoriesContainer').classList.remove('hidden');
-
-    // Ховаємо всі категорії
     document.querySelectorAll('.category-section').forEach(section => {
       section.classList.add('hidden');
     });
-
-    // Показуємо лише вибрану категорію
     const selectedCategory = document.getElementById(category);
     if (selectedCategory) {
       selectedCategory.classList.remove('hidden');
       selectedCategory.scrollIntoView({behavior: 'smooth'});
     }
-
-    // Оновлюємо активну категорію
     const categoryBoxes = document.querySelectorAll('.category-box');
     categoryBoxes.forEach(box => {
       box.classList.remove('active');
@@ -580,12 +592,12 @@
         const highlightedName = highlightSearchTerm(productName, searchTerm);
 
         resultItem.innerHTML = `
-          <img src="${productImage}" onerror="this.src='/no-image.png'">
-          <div class="search-result-info">
-            <div>${highlightedName}</div>
-            <small class="text-muted">${productPrice}</small>
-          </div>
-        `;
+                    <img src="${productImage}" onerror="this.src='/no-image.png'">
+                    <div class="search-result-info">
+                        <div>${highlightedName}</div>
+                        <small class="text-muted">${productPrice}</small>
+                    </div>
+                `;
 
         searchResultsList.appendChild(resultItem);
       }
@@ -701,8 +713,6 @@
               const cartCount = document.getElementById('cartCount');
               const cartTotal = document.getElementById('cartTotal');
 
-              if (!cartItemsContainer || !cartCount || !cartTotal) return;
-
               if (data.items && data.items.length > 0) {
                 const groupedItems = data.items.reduce((acc, item) => {
                   if (!acc[item.id]) {
@@ -717,43 +727,44 @@
                 }, {});
 
                 cartItemsContainer.innerHTML = `
-          <h6 class="mb-3">Товари у кошику</h6>
-          ${Object.values(groupedItems).map(item => `
-              <div class="cart-item">
-                  <img src="${item.imageUrl}"
-                       onerror="this.src='/no-image.png'"
-                       class="cart-item-img">
-                  <div class="cart-item-info">
-                      <div class="cart-item-name">${item.name}</div>
-                      <div class="cart-item-price">${item.price} грн/шт</div>
-                      <div class="cart-item-controls">
-                          <button class="quantity-btn"
-                                  onclick="decreaseQuantity(${item.id})">-</button>
-                          <span class="quantity-value">${item.quantity}</span>
-                          <button class="quantity-btn"
-                                  onclick="increaseQuantity(${item.id})">+</button>
-                      </div>
-                  </div>
-                  <div class="text-end">
-                      <div class="fw-bold">${(item.price * item.quantity).toFixed(2)} грн</div>
-                      <div class="remove-item"
-                           onclick="removeFromCart(${item.id})">
-                          Видалити
-                      </div>
-                  </div>
-              </div>
-          `).join('')}
-        `;
+                        <h6 class="mb-3">Товари у кошику</h6>
+                        ${Object.values(groupedItems).map(item => `
+                            <div class="cart-item">
+                                <img src="${item.imageUrl}"
+                                     onerror="this.src='/no-image.png'"
+                                     class="cart-item-img">
+                                <div class="cart-item-info">
+                                    <div class="cart-item-name">${item.name}</div>
+                                    <div class="cart-item-price">${item.price} грн/шт</div>
+                                    <div class="cart-item-controls">
+                                        <button class="quantity-btn"
+                                                onclick="decreaseQuantity(${item.id})">-</button>
+                                        <span class="quantity-value">${item.quantity}</span>
+                                        <button class="quantity-btn"
+                                                onclick="increaseQuantity(${item.id})">+</button>
+                                    </div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="fw-bold">${(item.price * item.quantity).toFixed(2)} грн</div>
+                                    <div class="remove-item"
+                                         onclick="removeFromCart(${item.id})">
+                                        Видалити
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    `;
                 cartCount.textContent = data.items.length;
+                cartCount.style.display = 'block';
                 cartTotal.textContent = data.total.toFixed(2) + ' грн';
               } else {
                 cartItemsContainer.innerHTML = `
-          <div class="empty-cart">
-              <i class="fas fa-shopping-cart fa-2x mb-2"></i>
-              <p>Кошик порожній</p>
-          </div>
-        `;
-                cartCount.textContent = '0';
+                        <div class="empty-cart">
+                            <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                            <p>Кошик порожній</p>
+                        </div>
+                    `;
+                cartCount.style.display = 'none';
                 cartTotal.textContent = '0 грн';
               }
             })
@@ -802,7 +813,6 @@
       };
     });
 
-    // Ініціалізуємо кошик при завантаженні сторінки
     updateCartDropdown();
   });
 </script>
