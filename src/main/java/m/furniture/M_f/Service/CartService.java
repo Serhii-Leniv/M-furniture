@@ -34,47 +34,43 @@ public class CartService {
                 }
             });
         }
-
         return products;
     }
 
     public double calculateTotal(HttpServletRequest request) {
-        Map<Long, Integer> cartMap = readCartMapFromCookies(request);
-        double total = 0.0;
-
-        for (Map.Entry<Long, Integer> entry : cartMap.entrySet()) {
-            Optional<Product> productOpt = productRepository.findById(entry.getKey());
-            if (productOpt.isPresent()) {
-                total += productOpt.get().getPrice() * entry.getValue();
-            }
-        }
-
-        return total;
+        return readCartMapFromCookies(request).entrySet().stream()
+                .mapToDouble(entry -> productRepository.findById(entry.getKey())
+                        .map(p -> p.getPrice() * entry.getValue())
+                        .orElse(0.0))
+                .sum();
     }
 
     public void addProductToCart(Long productId, HttpServletRequest request, HttpServletResponse response) {
-        Map<Long, Integer> cartMap = readCartMapFromCookies(request);
-        cartMap.put(productId, cartMap.getOrDefault(productId, 0) + 1);
-        writeCartMapToCookies(cartMap, response);
+        updateCart(productId, request, response, count -> count + 1);
     }
 
     public void removeProductFromCart(Long productId, HttpServletRequest request, HttpServletResponse response) {
-        Map<Long, Integer> cartMap = readCartMapFromCookies(request);
-        cartMap.remove(productId);
-        writeCartMapToCookies(cartMap, response);
+        updateCart(productId, request, response, count -> 0);
     }
 
     public void increaseProductQuantity(Long productId, HttpServletRequest request, HttpServletResponse response) {
-        Map<Long, Integer> cartMap = readCartMapFromCookies(request);
-        cartMap.put(productId, cartMap.getOrDefault(productId, 0) + 1);
-        writeCartMapToCookies(cartMap, response);
+        updateCart(productId, request, response, count -> count + 1);
     }
 
     public void decreaseProductQuantity(Long productId, HttpServletRequest request, HttpServletResponse response) {
+        updateCart(productId, request, response, count -> count > 1 ? count - 1 : 0);
+    }
+
+    private void updateCart(Long productId,
+                            HttpServletRequest request,
+                            HttpServletResponse response,
+                            java.util.function.Function<Integer, Integer> updateFunction) {
         Map<Long, Integer> cartMap = readCartMapFromCookies(request);
-        int count = cartMap.getOrDefault(productId, 0);
-        if (count > 1) {
-            cartMap.put(productId, count - 1);
+        int currentCount = cartMap.getOrDefault(productId, 0);
+        int newCount = updateFunction.apply(currentCount);
+
+        if (newCount > 0) {
+            cartMap.put(productId, newCount);
         } else {
             cartMap.remove(productId);
         }
@@ -82,19 +78,19 @@ public class CartService {
     }
 
     private Map<Long, Integer> readCartMapFromCookies(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("cart".equals(cookie.getName())) {
-                    try {
+        try {
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("cart".equals(cookie.getName())) {
                         String decoded = URLDecoder.decode(cookie.getValue(), StandardCharsets.UTF_8);
                         return objectMapper.readValue(decoded, new TypeReference<Map<Long, Integer>>() {
                         });
-                    } catch (Exception e) {
-                        System.err.println("Помилка при читанні кошика: " + e.getMessage());
                     }
                 }
             }
+        } catch (Exception e) {
+            System.err.println("Помилка читання кошика: " + e.getMessage());
         }
         return new HashMap<>();
     }
@@ -106,10 +102,12 @@ public class CartService {
 
             Cookie cookie = new Cookie("cart", encoded);
             cookie.setPath("/");
-            cookie.setMaxAge(7 * 24 * 60 * 60);
+            cookie.setMaxAge(365 * 24 * 60 * 60); // 1 рік
+            cookie.setSecure(false);
+            cookie.setHttpOnly(false);
             response.addCookie(cookie);
         } catch (Exception e) {
-            throw new RuntimeException("Помилка при записі кошика в куки", e);
+            throw new RuntimeException("Помилка запису кошика", e);
         }
     }
 }

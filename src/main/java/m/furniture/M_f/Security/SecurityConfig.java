@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -15,23 +17,16 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // Дозволити всім доступ до статичних ресурсів та головних сторінок
                         .requestMatchers(
-                                "/",
-                                "/main",
-                                "/register",
-                                "/login",
-                                "/api/**",
-                                "/products/**",
-                                "/search",
-                                "/checkout" // Якщо потрібно показувати сторінку без авторизації
-                        ).permitAll()
-
-                        // Вимагати авторизацію тільки для замовлень
-                        .requestMatchers("/orders/**", "/order/**").authenticated()
-
-                        // Всі інші запити дозволити
+                                "/orders/**",
+                                "/order/**",
+                                "/checkout"
+                        ).authenticated()
                         .anyRequest().permitAll()
+                )
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .ignoringRequestMatchers("/api/cart/**")
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -42,7 +37,7 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/main")
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
+                        .deleteCookies("JSESSIONID", "cart", "XSRF-TOKEN")
                         .permitAll()
                 )
                 .sessionManagement(session -> session

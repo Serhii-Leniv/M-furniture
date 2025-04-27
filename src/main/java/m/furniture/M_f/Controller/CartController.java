@@ -25,7 +25,6 @@ public class CartController {
         List<Product> items = cartService.getCartItems(request);
         double total = cartService.calculateTotal(request);
 
-        // Додаємо URL зображень до кожного товару
         List<Map<String, Object>> enrichedItems = items.stream()
                 .map(item -> {
                     Map<String, Object> itemMap = new HashMap<>();
@@ -45,50 +44,36 @@ public class CartController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Map<String, String>> addToCart(@RequestParam Long productId,
-                                                         HttpServletRequest request,
-                                                         HttpServletResponse response) {
-        try {
-            cartService.addProductToCart(productId, request, response);
-            return ResponseEntity.ok(Map.of("message", "Товар додано в кошик"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
-        }
+    public ResponseEntity<Map<String, String>> addToCart(
+            @RequestParam Long productId,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        cartService.addProductToCart(productId, request, response);
+        return ResponseEntity.ok(Map.of("message", "Товар додано в кошик"));
     }
 
     @DeleteMapping("/remove")
     public ResponseEntity<Map<String, String>> removeFromCart(@RequestParam Long productId,
                                                               HttpServletRequest request,
                                                               HttpServletResponse response) {
-        try {
-            cartService.removeProductFromCart(productId, request, response);
-            return ResponseEntity.ok(Map.of("message", "Товар видалено з кошика"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
-        }
+        cartService.removeProductFromCart(productId, request, response);
+        return ResponseEntity.ok(Map.of("message", "Товар видалено з кошика"));
     }
 
     @PostMapping("/increase")
     public ResponseEntity<Map<String, String>> increaseQuantity(@RequestParam Long productId,
                                                                 HttpServletRequest request,
                                                                 HttpServletResponse response) {
-        try {
-            cartService.increaseProductQuantity(productId, request, response);
-            return ResponseEntity.ok(Map.of("message", "Кількість збільшено"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
-        }
+        cartService.increaseProductQuantity(productId, request, response);
+        return ResponseEntity.ok(Map.of("message", "Кількість збільшено"));
     }
 
     @PostMapping("/decrease")
     public ResponseEntity<Map<String, String>> decreaseQuantity(@RequestParam Long productId,
                                                                 HttpServletRequest request,
                                                                 HttpServletResponse response) {
-        try {
-            cartService.decreaseProductQuantity(productId, request, response);
-            return ResponseEntity.ok(Map.of("message", "Кількість зменшено"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body(Map.of("message", e.getMessage()));
-        }
+        cartService.decreaseProductQuantity(productId, request, response);
+        return ResponseEntity.ok(Map.of("message", "Кількість зменшено"));
     }
 }

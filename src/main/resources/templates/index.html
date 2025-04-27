@@ -615,22 +615,27 @@
     dropdown.style.display = 'none';
   }
 
+  function getCsrfToken() {
+    return document.cookie
+            .split('; ')
+            .find(row => row.startsWith('XSRF-TOKEN='))
+            ?.split('=')[1];
+  }
+
   function addToCart(productId) {
     fetch(`/api/cart/add?productId=${productId}`, {
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'X-XSRF-TOKEN': getCsrfToken()
+      },
+      credentials: 'include'
     })
-            .then(response => {
-              if (!response.ok) throw new Error(response.statusText);
-              return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
               showCartNotification(data.message);
               updateCartDropdown();
             })
-            .catch(error => {
-              console.error('Помилка:', error);
-              alert('Помилка при додаванні товару в кошик');
-            });
+            .catch(error => console.error('Помилка:', error));
   }
 
   function removeFromCart(productId) {

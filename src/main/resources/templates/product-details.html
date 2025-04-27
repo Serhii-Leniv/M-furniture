@@ -444,17 +444,28 @@
 </div>
 
 <script>
-  // Функції для роботи з кошиком
+
+  function getCsrfToken() {
+    return document.cookie
+            .split('; ')
+            .find(row => row.startsWith('XSRF-TOKEN='))
+            ?.split('=')[1];
+  }
+
   function addToCart(productId) {
     fetch(`/api/cart/add?productId=${productId}`, {
-      method: 'POST'
+      method: 'POST',
+      headers: {
+        'X-XSRF-TOKEN': getCsrfToken()
+      },
+      credentials: 'include'
     })
-            .then(handleResponse)
+            .then(response => response.json())
             .then(data => {
-              showCartNotification('Товар додано до кошика');
+              showCartNotification(data.message);
               updateCartDropdown();
             })
-            .catch(handleError('Помилка при додаванні товару в кошик'));
+            .catch(error => console.error('Помилка:', error));
   }
 
   function removeFromCart(productId) {
