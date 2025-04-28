@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <!-- Стилі можна винести в окремий файл -->
+</head>
+<body>
+<header class="d-flex flex-wrap align-items-center justify-content-between py-3 mb-4 border-bottom">
+    <div class="d-flex align-items-center ms-3">
+        <a href="/" class="d-flex align-items-center text-dark text-decoration-none">
+            <img th:src="@{/MfTitle.jpg}" src="/MfTitle.jpg" alt="Логотип" class="logo-img"
+                 onerror="this.src='/no-image.png';this.classList.add('image-placeholder')">
+        </a>
+        <a href="/main" class="btn btn-link text-dark ms-3">Каталог</a>
+    </div>
+
+    <div class="d-flex align-items-center">
+        <div class="search-container dropdown">
+            <input class="form-control" type="search" id="searchInput" placeholder="Пошук товарів" aria-label="Пошук"
+                   data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="fas fa-search search-icon" id="searchButton"></i>
+            <div class="dropdown-menu search-dropdown-menu" id="searchResultsDropdown">
+                <div class="list-group" id="searchResultsList">
+                    <!-- Результати пошуку -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex align-items-center me-3">
+        <a href="tel:+380671234567" class="phone-link me-3">
+            <i class="fas fa-phone"></i> +380 67 123 4567
+        </a>
+
+        <div class="dropdown me-3">
+            <a href="#" class="text-dark" data-bs-toggle="dropdown">
+                <i class="fas fa-user"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end">
+                <div sec:authorize="!isAuthenticated()">
+                    <a class="dropdown-item" href="/login">Увійти</a>
+                    <a class="dropdown-item" href="/register">Реєстрація</a>
+                </div>
+                <div sec:authorize="isAuthenticated()">
+                    <span class="dropdown-item-text">Привіт, <span sec:authentication="name"></span></span>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="/orders">Мої замовлення</a>
+                    <form class="dropdown-item" th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-link p-0">Вийти</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="dropdown me-3">
+            <a href="#" class="text-dark" data-bs-toggle="dropdown" style="position: relative;">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-badge" id="cartCount">0</span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end cart-dropdown" onclick="event.stopPropagation()">
+                <div id="cartItemsContainer" class="px-3">
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                        <p>Кошик порожній</p>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center px-3 py-2 border-top">
+                    <strong>Всього:</strong>
+                    <span id="cartTotal" class="cart-total">0 грн</span>
+                </div>
+                <div class="px-3 pb-2">
+                    <a href="/checkout" class="btn btn-primary w-100">Оформити замовлення</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+</body>
+</html>
