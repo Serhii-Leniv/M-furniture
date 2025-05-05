@@ -26,11 +26,12 @@ public class Product {
 
     private String category;
 
+    private String subcategory;
+
     private String description;
 
     private Integer stock;
 
-    @JsonIgnore
     private String imageUrl;
 
 }

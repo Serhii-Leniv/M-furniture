@@ -13,6 +13,17 @@
 
   <div th:replace="~{fragments/header :: header}"></div>
 
+  <style>
+    .product-image {
+      width: 500px; /* Фіксована ширина */
+      height: 500px; /* Фіксована висота */
+      object-fit: contain; /* Зберігає пропорції, не обрізає */
+      border: 2px solid #ddd; /* Товщина та колір рамки */
+      padding: 5px; /* Відступи всередині рамки */
+      border-radius: 10px; /* Округлені кути */
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тінь навколо зображення */
+    }
+  </style>
   <!-- Основний вміст -->
   <div class="container">
     <div class="row">

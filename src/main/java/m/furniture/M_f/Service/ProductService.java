@@ -22,6 +22,10 @@ public class ProductService {
         return productRepository.findByCategory(category);
     }
 
+    public List<Product> getProductsByCategoryAndSubcategory(String category, String subcategory) {
+        return productRepository.findByCategoryAndSubcategory(category, subcategory);
+    }
+
     public Product getProductById(Long id) {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
     }

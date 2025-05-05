@@ -1,22 +1,4 @@
-function selectCategory(category) {
-    document.getElementById('carouselExample').classList.add('hidden');
-    document.getElementById('categoriesContainer').classList.remove('hidden');
-    document.querySelectorAll('.category-section').forEach(section => {
-        section.classList.add('hidden');
-    });
-    const selectedCategory = document.getElementById(category);
-    if (selectedCategory) {
-        selectedCategory.classList.remove('hidden');
-        selectedCategory.scrollIntoView({behavior: 'smooth'});
-    }
-    const categoryBoxes = document.querySelectorAll('.category-box');
-    categoryBoxes.forEach(box => {
-        box.classList.remove('active');
-        if (box.getAttribute('data-category') === category) {
-            box.classList.add('active');
-        }
-    });
-}
+
 
 function searchProducts() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -269,4 +251,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     updateCartDropdown();
+
 });

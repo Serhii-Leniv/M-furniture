@@ -179,10 +179,11 @@ body {
 }
 
 footer {
-    background-color: #f8f9fa;
+    background-color: #2E2E2E;
     padding: 40px 0;
     border-top: 1px solid #e9ecef;
     margin-top: auto;
+    color: #fff;
 }
 
 .logo-img {
@@ -203,37 +204,47 @@ footer {
 }
 
 .category-link {
-    color: #6c757d !important;
+    color: #dee2e6 !important;
     text-decoration: none;
     font-size: 1rem;
     transition: color 0.2s;
 }
 
 .category-link:hover {
-    color: #495057 !important;
+    color: #dee2e6 !important;
 }
+
+.carousel-inner img {
+    height: 576px;
+    object-fit: contain;
+    background: #fff;
+}
+
 
 .category-box {
-    background-color: #0d6efd;
-    padding: 15px;
-    border-radius: 0;
-    transition: all 0.3s ease;
-    margin-bottom: 5px;
-    margin-right: 5px;
-    border: none;
+    background-color: #000080;
+    border: 1px solid #dee2e6;
+    border-radius: 30px; /* Більше округлення */
+    padding: 10px 20px;
     cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+
 .category-box:hover {
-    background-color: #0b5ed7;
+    background-color: #e2e6ea;
     transform: translateY(-3px);
 }
 
-.category-box .category-link {
-    color: white !important;
-    font-weight: 500;
-    display: block;
-    padding: 5px 0;
+.c.category-link {
+    text-decoration: none;
+    color: #e2e6ea;
+    font-weight: bold;
+    font-size: 18px;
 }
 
 .category-box .category-link:hover {
@@ -314,7 +325,7 @@ footer {
 }
 
 .category-box.active {
-    background-color: #0b5ed7;
+    background-color: #000080;
     transform: translateY(-3px);
 }
 
@@ -322,6 +333,24 @@ footer {
 .cart-icon-container {
     position: relative;
     display: inline-block;
+}
+
+.hidden {
+    display: none;
+}
+
+.subcategory-box {
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: white;
+}
+
+.subcategory-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .cart-badge {
