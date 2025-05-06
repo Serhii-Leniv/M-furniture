@@ -105,27 +105,89 @@ body {
     }
 }
 
+.search-result-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    transition: background-color 0.2s;
+}
+
+.search-result-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 15px;
+    border-radius: 4px;
+}
+
+.search-result-info {
+    flex-grow: 1;
+}
+
+.search-highlight {
+    background-color: #fff3cd;
+    font-weight: 500;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.no-results {
+    padding: 15px;
+    color: #6c757d;
+    text-align: center;
+}
+
+/* Додайте ці стилі в head або в окремий CSS файл */
+/* Оновлені стилі для пошукового поля */
 .search-container {
     position: relative;
-    width: 400px;
 }
 
-.search-container input {
-    width: 100%;
-    padding-right: 50px;
-    font-size: 16px;
-}
-
-.search-container .search-icon {
+.search-icon {
     position: absolute;
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: #6c757d;
-    cursor: pointer;
-    font-size: 20px;
+    color: #6c757d; /* Сірий колір */
+    pointer-events: none;
+    z-index: 2;
 }
 
+.clear-icon {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6c757d; /* Сірий колір */
+    display: none;
+    z-index: 3;
+}
+
+.clear-icon:hover {
+    color: #495057; /* Темніший сірий при наведенні */
+}
+
+/* Приховати стандартний хрестик в полі пошуку */
+input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+input[type="search"]::-ms-clear {
+    display: none;
+}
+
+#searchInput {
+    padding-right: 70px;
+}
+
+.search-dropdown-menu {
+    width: 400px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 0;
+}
 .category-section {
     margin-top: 50px;
     position: relative;

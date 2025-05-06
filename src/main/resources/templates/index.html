@@ -7,51 +7,68 @@
   <link th:href="@{/css/main.css}" rel="stylesheet">
   <style>
     .main-category-box {
-      padding: 10px 15px;
-      border: 1px solid #000080;
-      border-radius: 10px;
-      margin: 5px;
+      padding: 15px 25px;
+      border: 2px solid #000080;
+      border-radius: 15px;
+      margin: 10px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      background: #000080;
-      width: 90%;
-      max-width: 180px; /* Трохи збільшимо максимальну ширину для основних категорій */
-      color: white; /* Білий колір тексту для основних категорій */
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: linear-gradient(135deg, #000080 0%, #1a237e 100%);
+      color: white;
       text-align: center;
-      display: inline-block; /* Щоб розміщувати в один ряд */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 200px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
     .main-category-box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 15px rgba(0, 0, 128, 0.3);
+      background: linear-gradient(135deg, #1a237e 0%, #000080 100%);
     }
 
     .main-category-box.active {
-      border-color: #000080;
-      background-color: #ADD8E6; /* Світліший фон для активної основної категорії */
+      background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
       color: #000080;
+      border-color: #000080;
     }
 
+    /* Оновлені стилі для підкатегорій */
     .subcategory-box {
-      padding: 10px 15px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      margin: 5px;
+      padding: 15px 25px;
+      border: 2px solid #000080;
+      border-radius: 12px;
+      margin: 10px;
       cursor: pointer;
       transition: all 0.3s ease;
-      background: white;
-      width: 90%;
-      max-width: 150px;
+      background: #ffffff;
       color: #000080;
       text-align: center;
-      display: inline-block; /* Щоб розміщувати в один ряд */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 180px;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+      font-size: 16px;
+      font-weight: 500;
     }
 
     .subcategory-box:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 10px rgba(0, 0, 128, 0.2);
+      background: #f8f9fa;
     }
 
+    .subcategory-box button {
+      background: none;
+      border: none;
+      color: inherit;
+      font: inherit;
+      cursor: pointer;
+      padding: 0;
+    }
     /* Для покращення використання простору на екранах */
     .product-item .card {
       height: 100%;
@@ -59,14 +76,31 @@
       flex-direction: column;
     }
 
-    .product-item .card img {
-      max-height: 200px; /* Обмежуємо висоту зображення */
-      object-fit: cover; /* Покращуємо відображення зображення */
-      width: 100%; /* Ширина на 100% */
+    .carousel-item img {
+      object-fit: contain;
+      height: 400px;
+      width: auto;
+      margin: 0 auto;
+    }
+
+    /* Оновлено стилі для фото товарів */
+
+    /* Стилі для кошика */
+    .cart-count {
+      display: none;
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #dc3545;
+      color: white;
+      border-radius: 50%;
+      padding: 3px 8px;
+      font-size: 12px;
     }
 
     /* Збільшуємо простір для карток на екранах */
     .products-container {
+      object-fit: contain;
       display: flex;
       flex-wrap: wrap;
       justify-content: space-around;
@@ -95,6 +129,78 @@
     #productsContainer.hidden {
       display: none;
     }
+
+    .product-item .card {
+      height: 400px; /* Фіксована висота */
+      border: 2px solid #e9ecef;
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .product-item .card:hover {
+      border-color: #000080;
+      box-shadow: 0 8px 20px rgba(0, 0, 128, 0.15);
+    }
+
+    .product-item .card-img-container {
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8f9fa;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    .product-item .card-img-top {
+      max-height: 100%;
+      max-width: 100%;
+      object-fit: contain;
+      padding: 15px;
+      transition: transform 0.3s ease;
+    }
+
+    .product-item .card:hover .card-img-top {
+      transform: scale(1.05);
+    }
+
+    .product-item .card-body {
+      padding: 20px;
+      position: relative;
+    }
+
+    .product-item .btn-primary {
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .product-item .card:hover .btn-primary {
+      bottom: 20px;
+      opacity: 1;
+    }
+
+    .product-item .card-title {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .product-item .card-text {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #000080;
+    }
+
+
   </style>
 
 </head>
@@ -103,18 +209,6 @@
   <div th:replace="~{fragments/header :: header}"></div>
 
   <div class="container">
-    <h1 class="text-center my-5">Про нас</h1>
-    <div class="row mb-3">
-      <div class="col-md-6">
-        <p>"М-Фурнітура" - ваш надійний партнер у світі меблевої фурнітури. Ми пропонуємо якісні рішення для
-          професіоналів та домашніх майстрів.</p>
-      </div>
-      <div class="col-md-6">
-        <p>Широкий асортимент, конкурентні ціни та індивідуальний підхід до кожного клієнта - наші головні переваги.</p>
-      </div>
-    </div>
-
-    <h2 class="text-center mb-4">Категорії товарів</h2>
     <div class="text-center mb-4">
       <div th:each="category : ${categories}" class="main-category-box" th:attr="data-category=${category}"
            onclick="selectCategory(this.getAttribute('data-category'))">
@@ -130,6 +224,9 @@
         <div class="carousel-item">
           <img src="/promo2.jpg" class="d-block w-100" alt="Акція 2">
         </div>
+        <div class="carousel-item">
+          <img src="/promo3.jpg" class="d-block w-100" alt="Акція 2">
+        </div>
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
         <span class="carousel-control-prev-icon"></span>
@@ -144,11 +241,27 @@
     <div id="productsContainer" class="hidden mt-4">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 id="currentSubcategory" class="mb-0"></h3>
-        <button class="btn btn-outline-secondary" onclick="goBackToSubcategories()">
-          <i class="fas fa-arrow-left"></i> Назад до підкатегорій
-        </button>
       </div>
       <div class="products-container" id="productsList"></div>
+    </div>
+
+    <h1 class="text-center my-5">Про нас</h1>
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <p>У нашому магазині ви знайдете все необхідне для облаштування індивідуального та комфортного простору у вашому
+          домі чи офісі.
+          Ми пропонуємо широкий асортимент меблевої фурнітури, включаючи ручки, ніжки, петлі, замки, кріплення,
+          направляючі, виcувні ящики,
+          аксесуари для офісу та гардеробу, кухонні аксесуари та багато іншого. Наші товари виготовлені з використанням
+          найсучасніших технологій
+          та з використанням якісних матеріалів, що гарантує їхню надійність та довговічність.</p>
+      </div>
+      <div class="col-md-6">
+        <p>Не витрачайте час на пошуки в магазинах. Замовляйте меблеву фурнітуру онлайн у нашому інтернет-магазині та
+          створюйте свою ідеальну обстановку з комфортом і стилем.
+          Приєднуйтеся до наших задоволених клієнтів, які вже оцінили якість та сервіс, які ми надаємо. Робіть свій
+          інтер'єр неповторним разом з нами!</p>
+      </div>
     </div>
 
   </div>
@@ -289,70 +402,6 @@
     document.getElementById('subcategoriesContainer').classList.remove('hidden');
   }
 
-
-  function searchProducts() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
-    const searchResultsList = document.getElementById('searchResultsList');
-
-    if (searchTerm === '') {
-      hideSearchResults();
-      return;
-    }
-
-    const productItems = document.querySelectorAll('.product-item');
-    let foundResults = false;
-
-    searchResultsList.innerHTML = '';
-
-    productItems.forEach(item => {
-      const productName = item.querySelector('.product-name').textContent.toLowerCase();
-      const productLink = item.querySelector('a').getAttribute('href');
-      const productImage = item.querySelector('img').getAttribute('src');
-      const productPrice = item.querySelector('p').textContent;
-
-      if (productName.includes(searchTerm)) {
-        foundResults = true;
-        const resultItem = document.createElement('a');
-        resultItem.href = productLink;
-        resultItem.className = 'list-group-item list-group-item-action search-result-item';
-
-        const highlightedName = highlightSearchTerm(productName, searchTerm);
-
-        resultItem.innerHTML = `
-                    <img src="${productImage}" onerror="this.src='/no-image.png'">
-                    <div class="search-result-info">
-                        <div>${highlightedName}</div>
-                        <small class="text-muted">${productPrice}</small>
-                    </div>
-                `;
-
-        searchResultsList.appendChild(resultItem);
-      }
-    });
-
-    if (!foundResults) {
-      searchResultsList.innerHTML = '<div class="no-results">Нічого не знайдено</div>';
-    }
-
-    showSearchResults();
-  }
-
-  function highlightSearchTerm(text, term) {
-    const regex = new RegExp(term, 'gi');
-    return text.replace(regex, match => `<span class="search-highlight">${match}</span>`);
-  }
-
-  function showSearchResults() {
-    const dropdown = document.getElementById('searchResultsDropdown');
-    dropdown.classList.add('show');
-    dropdown.style.display = 'block';
-  }
-
-  function hideSearchResults() {
-    const dropdown = document.getElementById('searchResultsDropdown');
-    dropdown.classList.remove('show');
-    dropdown.style.display = 'none';
-  }
 
   function getCsrfToken() {
     return document.cookie
@@ -535,8 +584,13 @@
 
   });
 
+  document.addEventListener('DOMContentLoaded', function () {
+    updateCartDropdown(); // Оновлюємо кошик при завантаженні сторінки
+  });
+
 </script>
 
+<script th:src="@{/js/main.js}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

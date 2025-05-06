@@ -30,6 +30,10 @@ public class ProductService {
         return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
+    public List<Product> searchProducts(String query) {
+        return productRepository.searchProducts(query);
+    }
+
 }
 
 

@@ -1,7 +1,6 @@
 
-
 function searchProducts() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    const searchTerm = document.getElementById('searchInput').value.trim();
     const searchResultsList = document.getElementById('searchResultsList');
 
     if (searchTerm === '') {
@@ -9,48 +8,66 @@ function searchProducts() {
         return;
     }
 
-    const productItems = document.querySelectorAll('.product-item');
-    let foundResults = false;
+    fetch(`/api/products/search?query=${encodeURIComponent(searchTerm)}`)
+        .then(response => {
+            if (!response.ok) throw new Error('Помилка пошуку');
+            return response.json();
+        })
+        .then(products => {
+            searchResultsList.innerHTML = '';
 
-    searchResultsList.innerHTML = '';
+            if (products.length === 0) {
+                searchResultsList.innerHTML = '<div class="no-results">Нічого не знайдено</div>';
+                showSearchResults();
+                return;
+            }
 
-    productItems.forEach(item => {
-        const productName = item.querySelector('.product-name').textContent.toLowerCase();
-        const productLink = item.querySelector('a').getAttribute('href');
-        const productImage = item.querySelector('img').getAttribute('src');
-        const productPrice = item.querySelector('p').textContent;
+            products.forEach(product => {
+                const resultItem = document.createElement('a');
+                resultItem.href = `/product/${product.id}`;
+                resultItem.className = 'list-group-item list-group-item-action search-result-item';
 
-        if (productName.includes(searchTerm)) {
-            foundResults = true;
-            const resultItem = document.createElement('a');
-            resultItem.href = productLink;
-            resultItem.className = 'list-group-item list-group-item-action search-result-item';
+                const highlightedName = highlightSearchTerm(
+                    product.name.toLowerCase(),
+                    searchTerm.toLowerCase()
+                );
 
-            const highlightedName = highlightSearchTerm(productName, searchTerm);
-
-            resultItem.innerHTML = `
-                    <img src="${productImage}" onerror="this.src='/no-image.png'">
+                resultItem.innerHTML = `
+                    <img src="${product.imageUrl || '/no-image.png'}" 
+                         onerror="this.src='/no-image.png'">
                     <div class="search-result-info">
                         <div>${highlightedName}</div>
-                        <small class="text-muted">${productPrice}</small>
+                        <small class="text-muted">${product.price} грн</small>
                     </div>
                 `;
 
-            searchResultsList.appendChild(resultItem);
-        }
-    });
+                searchResultsList.appendChild(resultItem);
+            });
 
-    if (!foundResults) {
-        searchResultsList.innerHTML = '<div class="no-results">Нічого не знайдено</div>';
-    }
-
-    showSearchResults();
+            showSearchResults();
+        })
+        .catch(error => {
+            console.error('Помилка:', error);
+            searchResultsList.innerHTML = '<div class="no-results">Помилка пошуку</div>';
+            showSearchResults();
+        });
 }
-
 function highlightSearchTerm(text, term) {
     const regex = new RegExp(term, 'gi');
     return text.replace(regex, match => `<span class="search-highlight">${match}</span>`);
 }
+
+document.getElementById('searchInput').addEventListener('input', function (e) {
+    const clearIcon = document.getElementById('clearSearch');
+    clearIcon.style.display = e.target.value ? 'block' : 'none';
+    searchProducts();
+});
+
+document.getElementById('clearSearch').addEventListener('click', function () {
+    document.getElementById('searchInput').value = '';
+    this.style.display = 'none';
+    hideSearchResults();
+});
 
 function showSearchResults() {
     const dropdown = document.getElementById('searchResultsDropdown');
@@ -251,5 +268,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     updateCartDropdown();
+    document.addEventListener('DOMContentLoaded', function () {
+        updateCartDropdown(); // Оновлюємо кошик при завантаженні сторінки
+    });
 
 });

@@ -3,10 +3,12 @@ package m.furniture.M_f.Controller;
 import m.furniture.M_f.Entity.Product;
 import m.furniture.M_f.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
@@ -58,4 +60,14 @@ public class ProductController {
         System.out.println("Found products: " + products.size());
         return products;
     }
+
+    @GetMapping("/api/products/search")
+    @ResponseBody
+    public ResponseEntity<List<Product>> searchProducts(
+            @RequestParam("query") String searchTerm
+    ) {
+        List<Product> products = productService.searchProducts(searchTerm);
+        return ResponseEntity.ok(products);
+    }
+
 }
