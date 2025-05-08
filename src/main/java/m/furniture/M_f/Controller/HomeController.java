@@ -6,6 +6,8 @@ import m.furniture.M_f.Service.CallService;
 import m.furniture.M_f.Service.CartService;
 import m.furniture.M_f.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -53,19 +55,18 @@ public class HomeController {
 
     @PostMapping("/save-phone")
     @ResponseBody
-    public String savePhoneNumber(@RequestParam String phoneNumber) {
+    public ResponseEntity<String> savePhoneNumber(@RequestParam String phoneNumber) {
         try {
             Call call = new Call();
             call.setPhoneNumber(phoneNumber);
-            call.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            call.setTimestamp(String.valueOf(LocalDateTime.now()));
 
             callService.savePhone(call);
-            return "Дякуємо! Ми зв'яжемося з вами найближчим часом.";
+            return ResponseEntity.ok("Дякуємо! Ми зв'яжемося з вами найближчим часом.");
         } catch (Exception e) {
-            return "Помилка при збереженні номера: " + e.getMessage();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Помилка при збереженні номера: " + e.getMessage());
         }
-
-
+    }
     }
 
-}

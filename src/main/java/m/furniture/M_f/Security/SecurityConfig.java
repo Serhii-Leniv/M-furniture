@@ -26,7 +26,7 @@ public class SecurityConfig {
                 )
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/cart/**")
+                        .ignoringRequestMatchers("/api/cart/**", "/save-phone")
                 )
                 .formLogin(form -> form
                         .loginPage("/login")

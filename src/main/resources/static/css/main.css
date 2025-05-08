@@ -1,4 +1,5 @@
 html, body {
+< link href = "https://fonts.googleapis.com/css2?family=Play:wght@400;500;700&display=swap" rel = "stylesheet" > font-family: 'Play', sans-serif;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -355,7 +356,7 @@ footer {
 }
 
 .search-highlight {
-    background-color: #ffeb3b;
+    background-color: #D4A017;
     font-weight: bold;
     padding: 0 2px;
 }
@@ -419,7 +420,7 @@ footer {
     position: absolute;
     top: 0;
     right: 0;
-    background: #dc3545;
+    background: #D4A017;
     color: white;
     border-radius: 50%;
     padding: 0.25em 0.6em;
