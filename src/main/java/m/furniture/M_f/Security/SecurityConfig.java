@@ -19,14 +19,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/orders/**",
-                                "/order/**",
+
                                 "/checkout"
                         ).authenticated()
                         .anyRequest().permitAll()
                 )
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .ignoringRequestMatchers("/api/cart/**", "/save-phone")
+                        .ignoringRequestMatchers("/api/cart/**", "/save-phone", "/order")
                 )
                 .formLogin(form -> form
                         .loginPage("/login")

@@ -155,76 +155,94 @@ function decreaseQuantity(productId) {
             alert('Помилка при зменшенні кількості');
         });
 }
-
 function updateCartDropdown() {
     fetch('/api/cart/items')
         .then(response => {
-            if (!response.ok) throw new Error(response.statusText);
+            if (!response.ok) throw new Error('Помилка завантаження кошика');
             return response.json();
         })
         .then(data => {
             const cartItemsContainer = document.getElementById('cartItemsContainer');
             const cartCount = document.getElementById('cartCount');
             const cartTotal = document.getElementById('cartTotal');
+            const checkoutBtn = document.getElementById('checkoutButton');
 
-            if (data.items && data.items.length > 0) {
+            // Оновлення загальної кількості товарів
+            const totalItems = data.items?.length || 0;
+            cartCount.textContent = totalItems;
+
+            // Перемикач для кнопки оформлення
+            checkoutBtn.style.display = totalItems > 0 ? 'block' : 'none';
+
+            // Оновлення списку товарів
+            if (totalItems > 0) {
                 const groupedItems = data.items.reduce((acc, item) => {
                     if (!acc[item.id]) {
                         acc[item.id] = {
                             ...item,
                             quantity: 0,
+                            total: 0,
                             imageUrl: item.imageUrl || '/no-image.png'
                         };
                     }
                     acc[item.id].quantity++;
+                    acc[item.id].total += item.price;
                     return acc;
                 }, {});
 
                 cartItemsContainer.innerHTML = `
-                        <h6 class="mb-3">Товари у кошику</h6>
+                    <div class="cart-items-list">
                         ${Object.values(groupedItems).map(item => `
-                            <div class="cart-item">
-                                <img src="${item.imageUrl}"
-                                     onerror="this.src='/no-image.png'"
-                                     class="cart-item-img">
+                            <div class="cart-item" data-id="${item.id}">
+                                <img src="${item.imageUrl}" 
+                                     alt="${item.name}"
+                                     class="cart-item-img"
+                                     onerror="this.src='/no-image.png'">
                                 <div class="cart-item-info">
                                     <div class="cart-item-name">${item.name}</div>
-                                    <div class="cart-item-price">${item.price} грн/шт</div>
+                                    <div class="cart-item-price">${item.price.toFixed(2)} грн/шт</div>
                                     <div class="cart-item-controls">
-                                        <button class="quantity-btn"
-                                                onclick="decreaseQuantity(${item.id})">-</button>
+                                        <button class="quantity-btn" 
+                                                onclick="decreaseQuantity(${item.id})">−</button>
                                         <span class="quantity-value">${item.quantity}</span>
-                                        <button class="quantity-btn"
+                                        <button class="quantity-btn" 
                                                 onclick="increaseQuantity(${item.id})">+</button>
                                     </div>
                                 </div>
-                                <div class="text-end">
-                                    <div class="fw-bold">${(item.price * item.quantity).toFixed(2)} грн</div>
-                                    <div class="remove-item"
-                                         onclick="removeFromCart(${item.id})">
-                                        Видалити
-                                    </div>
+                                <div class="cart-item-actions">
+                                    <div class="cart-item-total">${item.total.toFixed(2)} грн</div>
+                                    <button class="remove-item" 
+                                            onclick="removeFromCart(${item.id})">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
                         `).join('')}
-                    `;
-                cartCount.textContent = data.items.length;
-                cartCount.style.display = 'block';
-                cartTotal.textContent = data.total.toFixed(2) + ' грн';
+                    </div>
+                `;
+
+                // Оновлення загальної суми
+                const totalPrice = data.items.reduce((sum, item) => sum + item.price, 0);
+                cartTotal.textContent = `${totalPrice.toFixed(2)} грн`;
             } else {
                 cartItemsContainer.innerHTML = `
-                        <div class="empty-cart">
-                            <i class="fas fa-shopping-cart fa-2x mb-2"></i>
-                            <p>Кошик порожній</p>
-                        </div>
-                    `;
-                cartCount.style.display = 'none';
-                cartTotal.textContent = '0 грн';
+                    <div class="empty-cart text-center py-4">
+                        <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Кошик порожній</p>
+                    </div>
+                `;
+                cartTotal.textContent = '0.00 грн';
             }
         })
         .catch(error => {
             console.error('Помилка:', error);
-            alert('Помилка при оновленні кошика');
+            document.getElementById('checkoutButton').style.display = 'none';
+            cartItemsContainer.innerHTML = `
+                <div class="error-message text-danger p-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Не вдалось завантажити вміст кошика
+                </div>
+            `;
         });
 }
 
@@ -246,7 +264,6 @@ document.addEventListener('DOMContentLoaded', function () {
         searchTimeout = setTimeout(searchProducts, 300);
     });
 
-    searchButton.addEventListener('click', searchProducts);
 
     searchInput.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {

@@ -37,6 +37,15 @@ public class CartService {
         return products;
     }
 
+    public Map<Long, Integer> getCartMap(HttpServletRequest request) {
+        return readCartMapFromCookies(request);
+    }
+
+    public void clearCart(HttpServletResponse response) {
+        writeCartMapToCookies(new HashMap<>(), response);
+    }
+
+
     public double calculateTotal(HttpServletRequest request) {
         return readCartMapFromCookies(request).entrySet().stream()
                 .mapToDouble(entry -> productRepository.findById(entry.getKey())
