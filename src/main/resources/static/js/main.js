@@ -194,7 +194,7 @@ function updateCartDropdown() {
                     <div class="cart-items-list">
                         ${Object.values(groupedItems).map(item => `
                             <div class="cart-item" data-id="${item.id}">
-                                <img src="${item.imageUrl}" 
+                                <img src="${item.imageUrl}"
                                      alt="${item.name}"
                                      class="cart-item-img"
                                      onerror="this.src='/no-image.png'">
@@ -202,16 +202,16 @@ function updateCartDropdown() {
                                     <div class="cart-item-name">${item.name}</div>
                                     <div class="cart-item-price">${item.price.toFixed(2)} грн/шт</div>
                                     <div class="cart-item-controls">
-                                        <button class="quantity-btn" 
+                                        <button class="quantity-btn"
                                                 onclick="decreaseQuantity(${item.id})">−</button>
                                         <span class="quantity-value">${item.quantity}</span>
-                                        <button class="quantity-btn" 
+                                        <button class="quantity-btn"
                                                 onclick="increaseQuantity(${item.id})">+</button>
                                     </div>
                                 </div>
                                 <div class="cart-item-actions">
                                     <div class="cart-item-total">${item.total.toFixed(2)} грн</div>
-                                    <button class="remove-item" 
+                                    <button class="remove-item"
                                             onclick="removeFromCart(${item.id})">
                                         <i class="fas fa-times"></i>
                                     </button>
@@ -243,7 +243,15 @@ function updateCartDropdown() {
                     Не вдалось завантажити вміст кошика
                 </div>
             `;
+            addCartEventListeners();
         });
+}
+
+const checkoutForm = document.querySelector('#checkoutButton').closest('form');
+if (checkoutForm) {
+    checkoutForm.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
 }
 
 function showCartNotification(message) {
@@ -282,6 +290,32 @@ document.addEventListener('DOMContentLoaded', function () {
             if (this.src.includes('no-image.png')) return;
             this.src = '/no-image.png';
         };
+    });
+
+function addCartEventListeners() {
+    document.querySelectorAll('.quantity-btn, .remove-item').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Зупиняємо спливання
+
+            // Викликаємо відповідну функцію
+            const action = this.dataset.action;
+            const productId = this.dataset.id;
+
+            if (action === 'increase') increaseQuantity(productId);
+            if (action === 'decrease') decreaseQuantity(productId);
+            if (action === 'remove') removeFromCart(productId);
+        });
+    });
+}
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const cartDropdown = document.getElementById('cartDropdown');
+
+        if (cartDropdown) {
+            cartDropdown.addEventListener('click', function(e) {
+                e.stopPropagation(); // Зупиняємо спливання події
+            });
+        }
     });
 
     updateCartDropdown();
